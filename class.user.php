@@ -1,5 +1,5 @@
 <?php
-  require_once("LogPDO.php");
+  require_once("class.LogPDO.php");
 
   class User {
     public function __construct() {}
@@ -24,6 +24,34 @@
         // header("Location: index.php");
       } else {
         return false;
+      }
+    }
+
+    public function stateEmail($email) {
+      if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return 1;
+      } else if($this->MySQLAccess("email", $email)) {
+        return 2;
+      } else {
+        return 0;
+      }
+    }
+
+    public function stateName($name) {
+      if(strlen($name) < 2) {
+        return 3;
+      } else {
+        return 0;
+      }
+    }
+
+    public function stageAge($age) {
+      $int = intval($age);
+
+      if($int >= 10 && $int <= 115) {
+        return 0;
+      } else {
+        return 4;
       }
     }
   }

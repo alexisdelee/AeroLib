@@ -3,11 +3,13 @@
   <head>
     <title>Aérodrome Evreux Normandie</title>
     <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style/popup.css">
     <link rel="stylesheet" type="text/css" href="style/home.css">
     <link rel="icon" type="image/png" href="res/logo.png">
   </head>
   <body>
-    <?php require "nav.php"; ?>
+    <?php require_once("nav.php"); ?>
+    <?php require_once('popup.php'); ?>
 
     <header>
       <div class="container">
@@ -29,9 +31,7 @@
     </section>
 
     <article>
-      <div class="bloc">
-        <!-- <h1>S'inscrire ne prend que quelques secondes...</h1> -->
-
+      <div class="bloc" id="formulaire">
         <div class="row">
           <input name="form" id="name" type="text" placeholder="Indiana Jones">
           <label for="name">Nom</label>
@@ -46,7 +46,74 @@
           <input name="form" id="email" type="email" placeholder="indiana.jones@aventure.com">
           <label for="email">Email</label>
         </div>
+
+        <form class="code_input">
+          <?php
+            for($input = 0; $input < 6; $input++) {
+              echo "<input maxlength=\"1\" type=\"password\" class=\"" . (2 << $input) . "\">";
+            }
+          ?>
+        </form>
       </div>
     </article>
+
+    <script type="text/javascript" src="moment.js"></script>
+    <script type="text/javascript" src="moment-ferie-fr.js"></script>
+    <script type="text/javascript" src="oXHR.js"></script>
+    <script type="text/javascript" src="app.popup.js"></script>
+    <script type="text/javascript" src="autotab-magic.js"></script>
+    <script type="text/javascript">
+      var zday = 1483279800;
+      for(var day of moment().getFerieList(2017)){
+        var input = day.date._d.toString();
+        input = (moment(input).unix());
+
+        if(zday >= input && zday < input + 24 * 3600){
+          console.log("on", zday, input);
+        } else {
+          console.log("off", zday, input);
+        }
+      }
+
+
+      var list_of_errors = [
+        "<span>L'email n'est pas valide</span>",
+        "<span>L'email existe déjà</span>",
+        "<span>Le nom doit contenir plus de 2 caractères</span>",
+        "<span>L'âge est mal formaté</span>"
+      ];
+
+      Autotab.listen(document.querySelectorAll(".code_input input"), function(keys) {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function(){
+          if(request.readyState == 4 && request.status == 200){
+            if(request.responseText != "true" || request.responseText != "false"){
+              var errors = request.responseText.split(":");
+              var ul = document.createElement('ul');
+
+              ul.innerHTML = 'Les erreurs suivantes doivent être corrigées pour pouvoir continuer l\'inscription :';
+
+              for(var error of errors) {
+                if(error != 0) {
+                  var li = document.createElement('li');
+                  li.innerHTML = list_of_errors[error - 1];
+                  ul.appendChild(li);
+
+                  popup.manager.open(ul);
+                  Autotab.clear(document.querySelectorAll(".code_input input"));
+                }
+              }
+            }
+          }
+        }
+
+        request.open("POST", "subscribe.php");
+        request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.send("name=" + document.querySelector("#name").value +
+                     "&age=" + document.querySelector("#age").value +
+                     "&email=" + document.querySelector("#email").value +
+                     "&password=" + keys);
+      });
+    </script>
   </body>
 </html>

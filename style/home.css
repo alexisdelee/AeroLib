@@ -211,6 +211,40 @@ article {
   color: #a7bed6;
 }
 
+.code_input {
+  display: inline-block;
+  position: relative;
+  left: 50%;
+  width: 300px;
+  margin: 50px -150px 0 -150px;
+}
+
+.code_input input {
+  font-weight: 400px;
+  width: 40px;
+  height: 50px;
+  border: 2px solid #cccccc;
+  display: block;
+  float: left;
+  margin-right: 10px;
+  outline: 0;
+  font-size: 28px;
+  color: #cccccc;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.code_input input:hover {
+  color: #9b9b9b;
+}
+
+.code_input input:focus {
+  color: #4e7cad;
+  border-color: #4e7cad;
+}
+
 @media (max-width: 600px) {
   .row input {
     width: 100%;
