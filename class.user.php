@@ -17,13 +17,13 @@
 
     public function login($email, $pwd) {
       $bdd = new LogPDO();
-      $result = $bdd->execute("SELECT password FROM user WHERE email = ? AND statut <> 0", [$email]);
+      $result = $bdd->execute("SELECT password, accesstoken FROM user WHERE email = ? AND statut <> 0", [$email]);
 
       if(!empty($result) && password_verify($pwd, $result[0]["password"])) {
-        return true;
-        // header("Location: index.php");
+        $_SESSION["accesstoken"] = $result[0]["accesstoken"];
+        return 0;
       } else {
-        return false;
+        return 5;
       }
     }
 
@@ -52,6 +52,31 @@
         return 0;
       } else {
         return 4;
+      }
+    }
+
+    public function generateAccessToken($email) {
+      $accesstoken = md5(uniqid($email));
+
+      $bdd = new LogPDO();
+      $bdd->execute("UPDATE user SET accesstoken = ? WHERE email = ?", [$accesstoken, $email]);
+
+      return $accesstoken;
+    }
+
+    public function isConnected() {
+      if(!isset($_SESSION["accesstoken"]) || empty($_SESSION["accesstoken"])) {
+        return false;
+      }
+
+      $bdd = new LogPDO();
+      $result = $bdd->execute("SELECT id FROM user WHERE email = ? AND accesstoken = ?", [$_SESSION["email"], $_SESSION["accesstoken"]]);
+
+      if(empty($result)) {
+        return false;
+      } else {
+        $_SESSION["accesstoken"] = $this->generateAccessToken($_SESSION["email"]);
+        return true;
       }
     }
   }

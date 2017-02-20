@@ -150,6 +150,11 @@ article {
   width: 100%;
 }
 
+#connexion {
+  display: none;
+  height: 459.8px;
+}
+
 .bloc {
   max-width: 700px;
   margin: 100px auto;

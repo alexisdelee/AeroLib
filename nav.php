@@ -1,5 +1,3 @@
-<?php $connect = true; ?>
-
 <nav>
   <div class="centered">
     <div class="nav-services">
@@ -8,16 +6,11 @@
       <a class="nav-service" href=".">Aéroclub</a>
     </div>
 
-    <?php if($connect){ ?>
+    <?php if(isset($_SESSION["accesstoken"])){ ?>
       <div class="nav-pages">
         <a href=".">Compte</a>
         <a href="localisation.php">Prévision</a>
-        <a href=".">Déconnexion</a>
-      </div>
-    <?php } else { ?>
-      <div class="nav-pages">
-        <a href="localisation.php">Localisation</a>
-        <a href=".">Connexion</a>
+        <a href="logout.php">Déconnexion</a>
       </div>
     <?php } ?>
   </div>
