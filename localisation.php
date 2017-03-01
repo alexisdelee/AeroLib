@@ -6,7 +6,7 @@
 
   $user = new User();
   if(!$user->isConnected()) {
-    header("Location: .");
+    header("Location: index.php");
   }
 ?>
 
@@ -22,8 +22,17 @@
     <div id="map"></div>
 
     <section>
-      <center><p>Cliquez sur l'icone rouge pour avoir accès aux prévisions, ou naviguez sur la carte.<br>
-      <i>Le service météorologique se remet à jour toutes les heures automatiquement.</i></p></center>
+      <center>
+        <p>
+          <?php
+            if(isset($_SESSION["statut"]) && $_SESSION["statut"] == 2) {
+              echo "<a href=\"weatherService.php\">Réactualiser manuellement le service météo</a><br><br>";
+            }
+          ?>
+          Cliquez sur l'icone rouge pour avoir accès aux prévisions, ou naviguez sur la carte.<br>
+          <i>Le service météorologique se remet à jour toutes les heures automatiquement.</i>
+        </p>
+      </center>
     </section>
 
     <script type="text/javascript" src="oXHR.js"></script>

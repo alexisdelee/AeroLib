@@ -8,7 +8,7 @@
 
     <?php if(isset($_SESSION["accesstoken"])){ ?>
       <div class="nav-pages">
-        <a href=".">Compte</a>
+        <a href="account.php">Compte</a>
         <a href="localisation.php">Prévision</a>
         <a href="logout.php">Déconnexion</a>
       </div>

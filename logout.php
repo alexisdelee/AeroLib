@@ -7,7 +7,8 @@
   if($user->isConnected()) {
     unset($_SESSION["accesstoken"]);
     unset($_SESSION["email"]);
+    unset($_SESSION["statut"]);
   }
 
-  header("Location: .");
+  header("Location: index.php");
 ?>

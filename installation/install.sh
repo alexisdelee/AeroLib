@@ -72,9 +72,15 @@ then
 	apt-get install -y php5-mysql
 	/etc/init.d/apache2 restart
 
-	#transfer web files
+	# transfer web files
 	cd $execPath
 	cp -ar package/web/* /var/www/aerodrome/
+
+	# configure smtp
+	curl http://www.jetmore.org/john/code/swaks/files/swaks-20130209.0/swaks -o /var/www/aerodrome/bin/swaks
+	chmod +x /var/www/aerodrome/bin/swaks
+	apt-get install -y perl
+	cd /var/www/aerodrome/bin/ && ./swaks --auth --server smtp.mailgun.org --au postmaster@sandbox3fa628dca20c40289500f2300ae3f7db.mailgun.org --ap e5f80f40c4d61683d724d5209f3abc66 --to alexis.delee@hotmail.fr --h-Subject: "Avancement installation" --body "Installation finie"
 fi
 
 cd $execPath

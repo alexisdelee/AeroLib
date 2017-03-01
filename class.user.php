@@ -17,10 +17,12 @@
 
     public function login($email, $pwd) {
       $bdd = new LogPDO();
-      $result = $bdd->execute("SELECT password, accesstoken FROM user WHERE email = ? AND statut <> 0", [$email]);
+      $result = $bdd->execute("SELECT password, accesstoken, statut FROM user WHERE email = ? AND statut <> 0", [$email]);
 
       if(!empty($result) && password_verify($pwd, $result[0]["password"])) {
         $_SESSION["accesstoken"] = $result[0]["accesstoken"];
+        $_SESSION["statut"] = $result[0]["statut"];
+        
         return 0;
       } else {
         return 5;
