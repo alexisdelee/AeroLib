@@ -1,4 +1,6 @@
 <?php
+  session_start();
+  
   require_once("class.LogPDO.php");
 
   class User {

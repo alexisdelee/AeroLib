@@ -1,21 +1,20 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-if [ $# != 2 ]
+if [ $# != 1 ]
 then
 	echo "error: an expected parameter"
 	exit
 fi
+
+APT="apt-get -y"
 
 execPath=$(readlink -f $(dirname $0))
 
 # extract and decompress the file containing all the sources
 tar -zxf package.tar.gz
 
-if [ $2 = "true" ]
-then
-	#install global mysql
-	apt-get install -y mysql-server mysql-client
-fi
+# install global mysql
+$APT install mysql-server mysql-client
 
 # create the parent folder
 mkdir -p /var/www/aerodrome
@@ -38,7 +37,7 @@ then
 	cd $execPath
 
 	# install curl
-	apt-get install -y curl
+	$APT install curl
 
 	# import cron configuration
 	crontab package/crontab.bak
@@ -55,7 +54,7 @@ then
 	cd $execPath
 
 	# install apache server
-	apt-get install -y apache2
+	$APT install apache2
 
 	# site creation
 	cp package/aen.conf /etc/apache2/sites-available/
@@ -65,11 +64,11 @@ then
 	/etc/init.d/apache2 restart
 
 	# install php and restart apache
-	apt-get install -y php5-common libapache2-mod-php5 php5-cli
+	$APT install php5-common libapache2-mod-php5 php5-cli
 	/etc/init.d/apache2 restart
 
 	# install PDO driver on mysql and restart
-	apt-get install -y php5-mysql
+	$APT install php5-mysql
 	/etc/init.d/apache2 restart
 
 	# transfer web files
@@ -79,8 +78,14 @@ then
 	# configure smtp
 	curl http://www.jetmore.org/john/code/swaks/files/swaks-20130209.0/swaks -o /var/www/aerodrome/bin/swaks
 	chmod +x /var/www/aerodrome/bin/swaks
-	apt-get install -y perl
-	cd /var/www/aerodrome/bin/ && ./swaks --auth --server smtp.mailgun.org --au postmaster@sandbox3fa628dca20c40289500f2300ae3f7db.mailgun.org --ap e5f80f40c4d61683d724d5209f3abc66 --to alexis.delee@hotmail.fr --h-Subject: "Avancement installation" --body "Installation finie"
+	$APT install perl
+fi
+
+if [ $1 = "global" ] || [ $1 = "export" ]
+then
+	# install jre and jdk
+	$APT install default-jre
+	$APT install default-jdk
 fi
 
 cd $execPath
