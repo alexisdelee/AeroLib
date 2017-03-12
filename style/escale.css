@@ -1,0 +1,146 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  background: #EEEEEE;
+}
+
+nav {
+  height: 60px;
+  background: #222222;
+  font-weight: 400;
+}
+
+.nav-services {
+  float: left;
+}
+
+.nav-service {
+  color: #61b2a7;
+  display: block;
+  line-height: 30px;
+  padding: 15px 20px 15px 40px;
+  float: left;
+  position: relative;
+  text-decoration: none;
+  width: 155px;
+  font-size: 14px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 1px rgba(34, 34, 34, 0.3);
+}
+
+.active {
+  color: #ffffff;
+  background: #4e7cad;
+  /* border-bottom: 3px solid #5480AF; */
+}
+
+.nav-pages {
+  float: right;
+  padding: 15px 0;
+}
+
+.nav-pages a {
+  color: #4e7cad;
+  display: inline-block;
+  line-height: 30px;
+  padding: 0 10px;
+  float: left;
+  text-decoration: none;
+  border-radius: 2px;
+  font-size: 14px;
+  margin: 0 2px;
+}
+
+.nav-pages a:hover {
+  background: rgba(78, 124, 173, 0.2);
+}
+
+.is-active {
+  color: #222222 !important;
+  background: #4e7cad !important;
+}
+
+.centered {
+  max-width: 940px;
+  margin: 0 auto;
+}
+
+section {
+  position: relative;
+  float: left;
+  width: 100%;
+  background: #EEE;
+}
+
+section p {
+  max-width: 900px;
+  margin: 100px auto;
+  padding: 0 15px;
+  color: rgba(0, 0, 0, 0.7);
+  opacity: 0.7;
+}
+
+section a {
+  text-decoration: none;
+  color: #4e7cad;
+}
+
+table {
+  margin: 1em auto;
+  border: none;
+}
+
+th {
+  color: #D5DDE5;;
+  background: #1b1e24;
+  border-right: 1px solid #343a45;
+  padding: 10px;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  vertical-align: middle;
+  font-size: 11px;
+}
+
+th:first-child {
+  border-top-left-radius:3px;
+}
+ 
+th:last-child {
+  border-top-right-radius:3px;
+  border-right:none;
+}
+  
+tr {
+  border-top: 1px solid #C1C3D1;
+  border-bottom-: 1px solid #C1C3D1;
+  color: #666B85;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+}
+ 
+tr:first-child {border-top: none;}
+tr:last-child {border-bottom: none;}
+tr:last-child td:first-child {border-bottom-left-radius: 3px;}
+tr:last-child td:last-child {border-bottom-right-radius: 3px;}
+ 
+td {
+  background: #FFFFFF;
+  padding: 10px;
+  font-size: 11px;
+  text-align: center;
+  vertical-align: middle;
+  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #C1C3D1;
+  background: #EEE;
+  max-width: 210px;
+  overflow: hidden;
+}
+
+select {
+  border-radius: 3px;
+  padding: 7px;
+}

@@ -44,9 +44,14 @@ then
 
 	# transfer weather application
 	cp -ar package/bin /var/www/aerodrome/
+	
+	# create log folder
+	mkdir /var/www/aerodrome/bin/log
 
 	# run the program for the first time
-	cd /var/www/aerodrome/bin/ && ./weather
+	cd /var/www/aerodrome/bin/
+	chmod +x daemonWeather.sh
+	./daemonWeather.sh
 fi
 
 if [ $1 = "global" ] || [ $1 = "web" ]
@@ -83,8 +88,7 @@ fi
 
 if [ $1 = "global" ] || [ $1 = "export" ]
 then
-	# install jre and jdk
-	$APT install default-jre
+	# install and jdk
 	$APT install default-jdk
 fi
 

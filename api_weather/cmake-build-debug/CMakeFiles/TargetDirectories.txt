@@ -1,0 +1,3 @@
+C:/Users/Alexis/Documents/ESGI/2016-2017/PROJET ANNUEL/api_weather/cmake-build-debug/CMakeFiles/api_weather.dir
+C:/Users/Alexis/Documents/ESGI/2016-2017/PROJET ANNUEL/api_weather/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Alexis/Documents/ESGI/2016-2017/PROJET ANNUEL/api_weather/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -20,12 +20,12 @@
   }
 
   if(empty(array_filter($_SESSION["error_subscribe"]))) {
-    $_SESSION["accesstoken"] = md5(uniqid());
+    $accesstoken = md5(uniqid());
     
     $bdd = new LogPDO();
-    $bdd->execute("INSERT INTO user(name, password, email, age, accesstoken) VALUES(?, ?, ?, ?, ?)", [utf8_decode($_POST["name"]), password_hash($_POST["password"], PASSWORD_DEFAULT), utf8_decode($_POST["email"]), $_POST["age"], $_SESSION["accesstoken"]]);
+    $bdd->execute("INSERT INTO user(name, password, email, age, accesstoken) VALUES(?, ?, ?, ?, ?)", [utf8_decode($_POST["name"]), password_hash($_POST["password"], PASSWORD_DEFAULT), utf8_decode($_POST["email"]), $_POST["age"], $accesstoken]);
 
-    shell_exec('cd bin/ && ./swaks --auth --server smtp.mailgun.org:587 --au postmaster@sandbox3fa628dca20c40289500f2300ae3f7db.mailgun.org --ap e5f80f40c4d61683d724d5209f3abc66 --to ' . $_POST["email"] . ' --h-Subject: "Inscription" --body "Validez votre identite a l\'adresse suivante : aen.fr/verifemail.php?accesstoken=' . $_SESSION["accesstoken"] . '"');
+    shell_exec('cd bin/ && ./swaks --auth --server smtp.mailgun.org:587 --au postmaster@sandbox3fa628dca20c40289500f2300ae3f7db.mailgun.org --ap e5f80f40c4d61683d724d5209f3abc66 --to ' . $_POST["email"] . ' --h-Subject: "Inscription" --body "Validez votre identite a l\'adresse suivante : aen.fr/verifemail.php?accesstoken=' . $accesstoken . '"');
 
     echo "true";
   } else {

@@ -1,0 +1,25 @@
+# depslib dependency file v1.0
+1486214313 source:/home/alexis/Documents/weather/ext/jsmn/lib/jsmn.c
+	"../include/jsmn.h"
+
+1486214297 /home/alexis/Documents/weather/ext/jsmn/include/jsmn.h
+	<stddef.h>
+
+1488989283 source:/home/alexis/Documents/weather/main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"sources/h/traitment.h"
+
+1488989264 /home/alexis/Documents/weather/sources/h/traitment.h
+	<time.h>
+	"../../ext/jsmn/include/jsmn.h"
+
+1488989386 source:/home/alexis/Documents/weather/sources/c/traitment.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<errno.h>
+	<mysql/mysql.h>
+	"../h/traitment.h"
+
