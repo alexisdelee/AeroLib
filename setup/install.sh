@@ -50,6 +50,7 @@ then
 
 	# run the program for the first time
 	cd /var/www/aerodrome/bin/
+	chmod +x weather
 	chmod +x daemonWeather.sh
 	./daemonWeather.sh
 fi

@@ -6,22 +6,30 @@
   }
 
   if($_POST["action"] == "select" && isset($_POST["table"])) {
+    select_db($_POST["table"]);
+  } else if($_POST["action"] == "update" && isset($_POST["table"]) && isset($_POST["column"]) && isset($_POST["value"]) && isset($_POST["id"])) {
+    update_db($_POST["table"], $_POST["column"], $_POST["value"], $_POST["id"]);
+  } else if($_POST["action"] == "insert" && isset($_POST["table"]) && isset($_POST["columns"]) && isset($_POST["values"])) {
+    insert_db($_POST["table"], $_POST["columns"], $_POST["values"]);
+  }
+
+  function select_db($table) {
     $bdd = new LogPDO();
 
     echo "<table border=\"1\">";
     echo "<tr>";
 
-    $columns = eachSelect($bdd->execute("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = \"aerodrome\" AND `TABLE_NAME` = \"" . $_POST["table"] . "\"", []), null, function($value) {
+    $columns = eachSelect($bdd->execute("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = \"aerodrome\" AND `TABLE_NAME` = \"" . $table . "\"", []), null, function($value) {
       echo "<th>" . strtoupper($value) . "</th>";
     }, null);
 
     echo "</tr>";
 
-    eachSelect($bdd->execute("SELECT * FROM " . $_POST["table"] . " ORDER BY id DESC", []), function() {
+    eachSelect($bdd->execute("SELECT * FROM " . $table . " ORDER BY id DESC", []), function() {
       echo "<tr>";
     }, function($value, $key, $num) use($columns) {
       if($key != "id" && $key != "accesstoken") {
-        echo "<td contentEditable=\"true\" class=\"data\" data-table=\"" . $columns[$num] . "\">";
+        echo "<td contentEditable=\"true\" class=\"data\" data-column=\"" . $columns[$num] . "\">";
       } else {
         echo "<td data-table=\"" . $columns[$num] . "\">";
       }
@@ -43,20 +51,44 @@
       if(!$input) {
         echo "<td>&#60;GENERATED&#62;</td>";
       } else {
-        echo "<td><input style=\"width: 100%;\" type=\"text\"></td>";
+        echo "<td><input style=\"width: 100%;\" type=\"text\" data-column=\"" . $columns[$input] . "\"></td>";
       }
     }
 
     echo "</tr>";
     echo "</table>";
-  } else if($_POST["action"] == "update" && isset($_POST["table"]) && isset($_POST["column"]) && isset($_POST["value"]) && isset($_POST["id"])) {
+  }
+
+  function update_db($table, $column, $value, $id) {
     $bdd = new LogPDO();
 
-    if($_POST["column"] == "password") {
-      $bdd->execute("UPDATE " . $_POST["table"] . " SET " . $_POST["column"] . " = ? WHERE id = ?", [password_hash($_POST["value"], PASSWORD_DEFAULT), $_POST["id"]]);
+    if($column == "password") {
+      if(strlen($value) > 6) {
+        $password = substr($value, 0, 6);
+      } else {
+        $password = $value . str_repeat(" ", 6 - strlen($value));
+      }
+
+      $bdd->execute("UPDATE " . $table . " SET " . $column . " = ? WHERE id = ?", [password_hash($value, PASSWORD_DEFAULT), $id]);
     } else {
-      $bdd->execute("UPDATE " . $_POST["table"] . " SET " . $_POST["column"] . " = ? WHERE id = ?", [$_POST["value"], $_POST["id"]]);
+      $bdd->execute("UPDATE " . $table . " SET " . $column . " = ? WHERE id = ?", [$value, $id]);
     }
+  }
+
+  function insert_db($table, $columns, $values) {
+    $columns = explode("##", $columns);
+    $values = explode("##", $values);
+
+    $secret = array_fill(0, count($columns), "?");
+
+    $key = array_search("accesstoken", $columns);
+    $values[$key] = md5(uniqid($values[$key]));
+
+    $key = array_search("password", $columns);
+    $values[$key] = password_hash($values[$key], PASSWORD_DEFAULT);
+
+    $bdd = new LogPDO();
+    $bdd->execute("INSERT INTO " . $table . "(" . implode(",", $columns) . ") VALUES(" . implode(",", $secret) . ")", array_merge($values));
   }
 
   function eachSelect($request, $headerCallback, $contentCallback, $footerCallback) {
