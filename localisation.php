@@ -3,9 +3,17 @@
 
   require_once("class.user.php");
   require_once("nav.php");
+  require_once("popup.php");
 
   $user = new User();
-  if(!$user->isConnected()) {
+  if(isset($_SESSION["accesstoken"]) && isset($_SESSION["email"])) {
+    $state = $user->isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
+    $_SESSION["accesstoken"] = $state;
+  } else {
+    $state = false;
+  }
+
+  if(!$state) {
     header("Location: index.php");
   }
 ?>

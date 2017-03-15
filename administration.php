@@ -63,13 +63,9 @@
     $bdd = new LogPDO();
 
     if($column == "password") {
-      if(strlen($value) > 6) {
-        $password = substr($value, 0, 6);
-      } else {
-        $password = $value . str_repeat(" ", 6 - strlen($value));
-      }
+      $password = passwordManager($value);
 
-      $bdd->execute("UPDATE " . $table . " SET " . $column . " = ? WHERE id = ?", [password_hash($value, PASSWORD_DEFAULT), $id]);
+      $bdd->execute("UPDATE " . $table . " SET " . $column . " = ? WHERE id = ?", [password_hash($password, PASSWORD_DEFAULT), $id]);
     } else {
       $bdd->execute("UPDATE " . $table . " SET " . $column . " = ? WHERE id = ?", [$value, $id]);
     }
@@ -86,11 +82,19 @@
     }
 
     if(($key = array_search("password", $columns)) !== false){
-      $values[$key] = password_hash($values[$key], PASSWORD_DEFAULT);
+      $values[$key] = password_hash(passwordManager($values[$key]), PASSWORD_DEFAULT);
     }
 
     $bdd = new LogPDO();
     $bdd->execute("INSERT INTO " . $table . "(" . implode(",", $columns) . ") VALUES(" . implode(",", $secret) . ")", array_merge($values));
+  }
+
+  function passwordManager($password) {
+    if(strlen($password) > 6) {
+        return substr($password, 0, 6);
+      } else {
+        return $password . str_repeat(" ", 6 - strlen($password));
+      }
   }
 
   function eachSelect($request, $headerCallback, $contentCallback, $footerCallback) {

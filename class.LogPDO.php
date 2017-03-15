@@ -4,7 +4,7 @@
     private $namebdd_;
     private $userbdd_;
     private $mdpbdd_;
-    private $connection_;
+    protected $connection_;
 
     public function __construct($hostbdd = "localhost", $namebdd = "aerodrome", $userbdd = "root", $mdpbdd = "") {
       $this->hostbdd_ = $hostbdd;

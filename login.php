@@ -1,7 +1,6 @@
 <?php
   session_start();
 
-  require_once("class.LogPDO.php");
   require_once("class.user.php");
 
   if(isset($_POST["email"]) && isset($_POST["password"])) {
@@ -10,7 +9,14 @@
     unset($_SESSION["error_subscribe"]);
 
     $user = new User();
-    $_SESSION["error_subscribe"][] = $user->login($_POST["email"], $_POST["password"]);
+    $data = $user->login($_POST["email"], $_POST["password"]);
+    if(gettype($data) == "array") {
+      $_SESSION["accesstoken"] = $data[0];
+      $_SESSION["statut"] = $data[1];
+      $_SESSION["error_subscribe"][] = 0;
+    } else {
+      $_SESSION["error_subscribe"][] = $data;
+    }
   } else {
     echo "false";
   }

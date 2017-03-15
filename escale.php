@@ -1,12 +1,19 @@
 <?php
   session_start();
 
-  require_once("class.logPDO.php");
   require_once("class.user.php");
   require_once("nav.php");
+  require_once("popup.php");
 
   $user = new User();
-  if(!$user->isConnected()) {
+  if(isset($_SESSION["accesstoken"]) && isset($_SESSION["email"])) {
+    $state = $user->isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
+    $_SESSION["accesstoken"] = $state;
+  } else {
+    $state = false;
+  }
+
+  if(!$state) {
     header("Location: index.php");
   }
 ?>
@@ -127,15 +134,19 @@
           var values = [];
 
           inputs.forEach(function(els) {
-            columns.push(els.dataset.column);
-            values.push(els.value);
+            if(els.value.length > 0) {
+              columns.push(els.dataset.column);
+              values.push(els.value);
+            }
           });
 
           var request = new XMLHttpRequest();
 
           request.onreadystatechange = function(){
             if(request.readyState == 4 && request.status == 200){
-              draw_db();
+              if(columns.length > 0) {
+                draw_db();
+              }
             }
           }
 

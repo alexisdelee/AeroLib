@@ -6,6 +6,12 @@
   require_once("popup.php");
 
   $user = new User();
+  if(isset($_SESSION["accesstoken"]) && isset($_SESSION["email"])) {
+    $state = $user->isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
+    $_SESSION["accesstoken"] = $state;
+  } else {
+    $state = false;
+  }
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +44,7 @@
       Il comprend : un parking pour voitures. un grand hangar pour le stationnement des avions du club. un "Club-House", mis à la disposition de tous les membres et qui comprend, entre autres, un secrétariat, une salle de "briefing" et une salle de réunion. L'entretien et l'amélioration de ce local sont à la charge de tous. </p>
     </section>
 
-    <?php if(!$user->isConnected()){ ?>
+    <?php if(!$state){ ?>
       <article>
         <div class="can-toggle demo-rebrand-1">
           <input id="d" type="checkbox">
@@ -96,7 +102,7 @@
     <script type="text/javascript" src="libs/moment.js"></script>
     <script type="text/javascript" src="libs/moment-ferie-fr.js"></script>
 
-    <?php if(!$user->isConnected()){ ?>
+    <?php if(!$state){ ?>
       <script type="text/javascript" src="oXHR.js"></script>
       <script type="text/javascript" src="app.popup.js"></script>
       <script type="text/javascript" src="app.autotabMagic.js"></script>

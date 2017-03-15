@@ -1,14 +1,13 @@
-<?php
-  // session_start();
-  
+<?php  
   require_once("class.LogPDO.php");
 
-  class User {
-    public function __construct() {}
+  class User extends LogPDO {
+    public function __construct($hostbdd = "localhost", $namebdd = "aerodrome", $userbdd = "root", $mdpbdd = "") {
+      parent::__construct($hostbdd, $namebdd, $userbdd, $mdpbdd);
+    }
 
     public function MySQLAccess($key = null, $value = null) {
-      $bdd = new LogPDO();
-      $result = $bdd->execute("SELECT * FROM user WHERE " . $key . " = ?", [$value]);
+      $result = parent::execute("SELECT * FROM user WHERE " . $key . " = ?", [$value]);
 
       if(empty($result)) {
         return false;
@@ -18,14 +17,11 @@
     }
 
     public function login($email, $pwd) {
-      $bdd = new LogPDO();
-      $result = $bdd->execute("SELECT password, accesstoken, statut FROM user WHERE email = ? AND statut <> 0", [$email]);
+      $result = parent::execute("SELECT password, accesstoken, statut FROM user WHERE email = ? AND statut <> 0", [$email]);
 
       if(!empty($result) && password_verify($pwd, $result[0]["password"])) {
-        $_SESSION["accesstoken"] = $result[0]["accesstoken"];
-        $_SESSION["statut"] = $result[0]["statut"];
         
-        return 0;
+        return [$result[0]["accesstoken"], $result[0]["statut"]];
       } else {
         return 5;
       }
@@ -62,25 +58,22 @@
     public function generateAccessToken($email) {
       $accesstoken = md5(uniqid($email));
 
-      $bdd = new LogPDO();
-      $bdd->execute("UPDATE user SET accesstoken = ? WHERE email = ?", [$accesstoken, $email]);
+      parent::execute("UPDATE user SET accesstoken = ? WHERE email = ?", [$accesstoken, $email]);
 
       return $accesstoken;
     }
 
-    public function isConnected() {
-      if(!isset($_SESSION["accesstoken"]) || empty($_SESSION["accesstoken"])) {
+    public function isConnected($accesstoken, $email) {
+      if(!isset($email) || !isset($accesstoken) || empty($accesstoken)) {
         return false;
       }
 
-      $bdd = new LogPDO();
-      $result = $bdd->execute("SELECT id FROM user WHERE email = ? AND accesstoken = ?", [$_SESSION["email"], $_SESSION["accesstoken"]]);
+      $result = parent::execute("SELECT id FROM user WHERE email = ? AND accesstoken = ?", [$email, $accesstoken]);
 
       if(empty($result)) {
         return false;
       } else {
-        $_SESSION["accesstoken"] = $this->generateAccessToken($_SESSION["email"]);
-        return true;
+        return $this->generateAccessToken($email);
       }
     }
   }
