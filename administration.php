@@ -81,11 +81,13 @@
 
     $secret = array_fill(0, count($columns), "?");
 
-    $key = array_search("accesstoken", $columns);
-    $values[$key] = md5(uniqid($values[$key]));
+    if(($key = array_search("accesstoken", $columns)) !== false){
+      $values[$key] = md5(uniqid($values[$key]));
+    }
 
-    $key = array_search("password", $columns);
-    $values[$key] = password_hash($values[$key], PASSWORD_DEFAULT);
+    if(($key = array_search("password", $columns)) !== false){
+      $values[$key] = password_hash($values[$key], PASSWORD_DEFAULT);
+    }
 
     $bdd = new LogPDO();
     $bdd->execute("INSERT INTO " . $table . "(" . implode(",", $columns) . ") VALUES(" . implode(",", $secret) . ")", array_merge($values));
