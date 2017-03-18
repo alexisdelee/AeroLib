@@ -1,14 +1,14 @@
 <?php
-  require_once("class.LogPDO.php");
+  require_once("platforms/databases/UserDAO.php");
 
-  $bdd = new LogPDO();
-  $result = $bdd->execute("SELECT * FROM meteo ORDER BY id DESC LIMIT 1");
+  $manager = PDOUtils::getSharedInstance();
+  $data = $manager->getAll("SELECT * FROM weather ORDER BY idWeather DESC LIMIT 1");
 
   $items = ["date", "description", "temp", "pressure", "humidity", "temp_min", "temp_max", "visibility", "speed", "sunrise", "sunset"];
 
-  if($data = $result[0]) {
+  if(count($data) > 0) {
     foreach($items as $item){
-      echo $item . "-" . $data[$item] . ":";
+      echo $item . "-" . $data[0][$item] . ":";
     }
   } else {
     echo "undefined";

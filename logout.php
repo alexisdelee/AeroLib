@@ -1,21 +1,17 @@
 <?php
   session_start();
 
-  require_once("class.user.php");
+  require_once("platforms/databases/UserDAO.php");
 
-  $user = new User();
   if(isset($_SESSION["accesstoken"]) && isset($_SESSION["email"])) {
-    $state = $user->isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
-    $_SESSION["accesstoken"] = $state;
-  } else {
-    $state = false;
-  }
+    if(UserDAO::isConnected($_SESSION["accesstoken"], $_SESSION["email"])) {
+      unset($_SESSION["accesstoken"]);
+      unset($_SESSION["email"]);
+      unset($_SESSION["statut"]);
+      unset($_SESSION["error_subscribe"]);
 
-  if($state) {
-    unset($_SESSION["accesstoken"]);
-    unset($_SESSION["email"]);
-    unset($_SESSION["statut"]);
-    unset($_SESSION["error_subscribe"]);
+      session_destroy();
+    }
   }
 
   header("Location: index.php");

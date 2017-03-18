@@ -1,24 +1,24 @@
 <?php
   session_start();
 
-  require_once("class.user.php");
+  require_once("platforms/databases/UserDAO.php");
 
   if(isset($_POST["email"]) && isset($_POST["password"])) {
     $_POST["email"] = trim($_POST["email"]);
 
     unset($_SESSION["error_subscribe"]);
 
-    $user = new User();
-    $data = $user->login($_POST["email"], $_POST["password"]);
-    if(gettype($data) == "array") {
-      $_SESSION["accesstoken"] = $data[0];
-      $_SESSION["statut"] = $data[1];
-      $_SESSION["error_subscribe"][] = 0;
+    $user = UserDAO::login($_POST["email"], $_POST["password"]);
+    if($user == null) {
+      $_SESSION["error_subscribe"][] = 5;
     } else {
-      $_SESSION["error_subscribe"][] = $data;
+      $_SESSION["error_subscribe"][] = 0;
+
+      $_SESSION["accesstoken"] = $user->getAccesstoken();
+      $_SESSION["statut"] = $user->getStatut();
     }
   } else {
-    echo "false";
+    echo join(":", $_SESSION["error_subscribe"]);
   }
 
   if(empty(array_filter($_SESSION["error_subscribe"]))) {

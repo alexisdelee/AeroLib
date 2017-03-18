@@ -1,13 +1,12 @@
 <?php
   session_start();
 
-  require_once("class.user.php");
+  require_once("platforms/databases/UserDAO.php");
   require_once("nav.php");
   require_once("popup.php");
 
-  $user = new User();
   if(isset($_SESSION["accesstoken"]) && isset($_SESSION["email"])) {
-    $state = $user->isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
+    $state = UserDAO::isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
     $_SESSION["accesstoken"] = $state;
   } else {
     $state = false;
@@ -31,9 +30,22 @@
       if(isset($_SESSION["statut"]) && $_SESSION["statut"] == 2) {
         $options = [
           "default" => "Aucun service sélectionné",
-          "meteo" => "Météo",
-          "user" => "Utilisateur",
-          "acoustic" => "Acoustique"
+          "acoustic" => "[acoustic] Groupes acoustiques",
+          "administrative" => "[administrative] Frais de dossiers",
+          "area" => "[area] Zones de stationnement",
+          "category" => "[category] Catégories redevance abris",
+          "cleaning" => "[cleaning] Nettoyage",
+          "indoorparking" => "[indoorparking] Redevances abris",
+          "landing" => "[landing] Redevances d'atterrissage",
+          "model" => "[model] Types avions",
+          "outdoorparking" => "[outdoorparking] Redevances pour stationnement extérieur",
+          "plane" => "[plane] Gestionnaire des avions",
+          "prestation" => "[prestation] Prestation",
+          "receipt" => "[receipt] Factures",
+          "remittance" => "[remittance] Redevances d'atterrissage pour hélicoptère ou ULM non basés",
+          "reservoir" => "[reservoir] Produits pétroliers",
+          "user" => "[user] Utilisateur",
+          "weather" => "[weather] Météo"
         ];
 
         echo "<section>";
@@ -54,7 +66,7 @@
         </center>
       </section>
 
-      <script type="text/javascript" src="oXHR.js"></script>
+      <script type="text/javascript" src="controllers/oXHR.js"></script>
       <script type="text/javascript">
         var table = null;
 

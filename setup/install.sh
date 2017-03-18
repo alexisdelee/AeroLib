@@ -42,8 +42,9 @@ then
 	# import cron configuration
 	crontab package/crontab.bak
 
-	# transfer weather application
+	# transfer weather application and config files
 	cp -ar package/bin /var/www/aerodrome/
+	cp -ar package/config /var/www/aerodrome/
 	
 	# create log folder
 	mkdir /var/www/aerodrome/bin/log

@@ -78,7 +78,7 @@ int insert_db(const char *conf, const char *json, jsmntok_t *tokens, int frequen
     sprintf(response, "%ld", NOWDATE);
     strcat(values, response);
 
-    sprintf(request, "INSERT INTO meteo(%s) VALUES(%s)", keys, values);
+    sprintf(request, "INSERT INTO weather(%s) VALUES(%s)", keys, values);
     return readConf(conf, request);
 }
 
@@ -137,7 +137,9 @@ int inject_db(const char *request, const char *host, const char *database, const
     MYSQL *mysql;
 
     mysql = mysql_init(NULL);
-    mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "");
+    // mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "");
+    mysql_options(mysql, MYSQL_SET_CHARSET_NAME, "utf8");
+    mysql_options(mysql, MYSQL_INIT_COMMAND, "SET NAMES utf8");
 
     if(!mysql_real_connect(mysql, host, user, password, database, 0, NULL, 0)){
         return logfile(0, NOWDATE, "database connection error");

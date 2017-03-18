@@ -1,13 +1,12 @@
 <?php
   session_start();
 
-  require_once("class.user.php");
+  require_once("platforms/databases/UserDAO.php");
   require_once("nav.php");
   require_once("popup.php");
 
-  $user = new User();
   if(isset($_SESSION["accesstoken"]) && isset($_SESSION["email"])) {
-    $state = $user->isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
+    $state = UserDAO::isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
     $_SESSION["accesstoken"] = $state;
   } else {
     $state = false;
@@ -103,9 +102,9 @@
     <script type="text/javascript" src="libs/moment-ferie-fr.js"></script>
 
     <?php if(!$state){ ?>
-      <script type="text/javascript" src="oXHR.js"></script>
+      <script type="text/javascript" src="controllers/oXHR.js"></script>
       <script type="text/javascript" src="app.popup.js"></script>
-      <script type="text/javascript" src="app.autotabMagic.js"></script>
+      <script type="text/javascript" src="controllers/AutotabMagic.js"></script>
       <script type="text/javascript">
         /* Jours fériés
         var zday = 1483279800;

@@ -1,13 +1,13 @@
 <?php
   session_start();
 
-  require_once("class.user.php");
+  require_once("platforms/databases/UserDAO.php");
+  require_once("controllers/Configuration.php");
   require_once("nav.php");
   require_once("popup.php");
 
-  $user = new User();
   if(isset($_SESSION["accesstoken"]) && isset($_SESSION["email"])) {
-    $state = $user->isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
+    $state = UserDAO::isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
     $_SESSION["accesstoken"] = $state;
   } else {
     $state = false;
@@ -43,9 +43,9 @@
       </center>
     </section>
 
-    <script type="text/javascript" src="oXHR.js"></script>
+    <script type="text/javascript" src="controllers/oXHR.js"></script>
     <script type="text/javascript" src="app.weather.js"></script>
     <script type="text/javascript" src="app.map.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdQ6ZVlCQpRrQsyfhVDRGrHxreUkIKgOw&callback=getWeather"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo Configuration::api('googleapi'); ?>&callback=getWeather"></script>
   </body>
 </html>
