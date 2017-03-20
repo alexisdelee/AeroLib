@@ -73,8 +73,29 @@
         return md5(uniqid());
     }
 
-    public static function sendemail($to, $subject, $body) {
-      shell_exec("cd bin/ && ./swaks --auth --server smtp.mailgun.org:587 --au postmaster@sandbox3fa628dca20c40289500f2300ae3f7db.mailgun.org --ap " . Authentification::key("smtp") . " --to " . $to . " --h-Subject: " . $subject . " --body " . $body);
+    public static function sendemail($to, $subject, $body, $attachment = null) {
+      if($attachment === null) {
+        $command = "cd bin/ && ./swaks --auth ";
+        $command .= "--server smtp.mailgun.org:587 ";
+        $command .= "--au postmaster@sandbox3fa628dca20c40289500f2300ae3f7db.mailgun.org ";
+        $command .= "--ap " . Authentification::api("smtp") . " ";
+        $command .= "--to \"" . $to . "\" ";
+        $command .= "--h-Subject: \"" . utf8_decode($subject) . "\" ";
+        $command .= "--body \"" . utf8_decode($body) . "\"";
+      } else {
+        $command = "cd bin/ && cat \"../" . $attachment["path"] . "\" | ./swaks --auth ";
+        $command .= "--server smtp.mailgun.org:587 ";
+        $command .= "--au postmaster@sandbox3fa628dca20c40289500f2300ae3f7db.mailgun.org ";
+        $command .= "--ap " . Authentification::api("smtp") . " ";
+        $command .= "--to \"" . $to . "\" ";
+        $command .= "--h-Subject: \"" . utf8_decode($subject) . "\" ";
+        $command .= "--body \"" . utf8_decode($body) . "\" ";
+        $command .= "--attach-type text/plain ";
+        $command .= "--attach-name \"" . $attachment["name"] . "\" ";
+        $command .= "--attach -";
+      }
+
+      shell_exec($command);
     }
 
     public static function login($email, $password) {

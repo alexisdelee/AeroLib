@@ -81,6 +81,7 @@ then
 	# transfer web files
 	cd $execPath
 	cp -ar package/web/* /var/www/aerodrome/
+	mkdir /var/www/aerodrome/account
 
 	# configure smtp
 	curl http://www.jetmore.org/john/code/swaks/files/swaks-20130209.0/swaks -o /var/www/aerodrome/bin/swaks

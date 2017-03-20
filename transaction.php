@@ -14,7 +14,16 @@
         hash("crc32", $_SESSION["email"])
       );
 
-      UserDAO::sendemail($_SESSION["email"], "Confirmation transfère d'argent", "Pour terminer votre transaction, saisissez " . $key . " dans le formulaire en bas de page");
+      file_put_contents("account/" . $_SESSION["email"] . ".txt", $key);
+      UserDAO::sendemail(
+        $_SESSION["email"],
+        "Confirmation transfère d'argent",
+        "Pour terminer votre transaction de " . $_POST["amount"] . " euro(s), saisissez le code fourni en pièce jointe dans le formulaire en bas de page.",
+        [
+          name => "code.txt",
+          path => "account/" . $_SESSION["email"] . ".txt"
+        ]
+      );
     } else if(isset($_SESSION["private_key"]) && $_POST["type"] == "verification" && isset($_POST["key"]) && isset($_POST["amount"])) {
       $hash = Authentification::_xor(
         $_POST["key"],
@@ -24,11 +33,13 @@
 
       if($hash == hash("crc32", $_POST["amount"])) {
         $manager = PDOUtils::getSharedInstance();
-        $manager->exec("UPDATE `user` SET credit = ? WHERE email = ?", [$_POST["amount"], $_SESSION["email"]]);
+        $manager->exec("UPDATE `user` SET credit = credit + ? WHERE email = ?", [$_POST["amount"], $_SESSION["email"]]);
 
         unset($_SESSION["private_key"]); // destruction de la clé
+        unlink("account/" . $_SESSION["email"] . ".txt"); // suppression du fichier pour libérer de la place
 
         echo "true";
+        exit(666);
       }
     }
 

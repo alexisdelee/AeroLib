@@ -103,12 +103,15 @@
 
       let register = new Autotab();
       register.listen(document.querySelector(".code_input"), 1, (keys, els) => {
-        // debug
         let request = new XMLHttpRequest();
         request.onreadystatechange = function(){
           if(request.readyState == 4 && request.status == 200){
             if(request.responseText == "true") {
               window.location.reload();
+            } else {
+              let span = document.createElement("span");
+              span.textContent = "Code invalide.";
+              popup.manager.open(span);
             }
           }
         }
@@ -116,7 +119,6 @@
         request.open("POST", "transaction.php");
         request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         request.send("type=verification&key=" + keys + "&amount=" + amount);
-        // debug
 
         register.clear(els);
       });
