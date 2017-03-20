@@ -1,7 +1,7 @@
 <?php
   require_once("PDOUtils.php");
   require_once(__DIR__ . "/../../controllers/User.php");
-  require_once(__DIR__ . "/../../controllers/Configuration.php");
+  require_once(__DIR__ . "/../../controllers/Authentification.php");
 
   class UserDAO { // Database Access Object
     public static $C_EMAIL = 0x01;
@@ -66,15 +66,15 @@
       }
     }
 
-    public static function accesstokenManager($token) {
-      if(!empty($token))
+    public static function accesstokenManager($token = null) {
+      if($token !== null)
         return md5(uniqid($token));
       else
         return md5(uniqid());
     }
 
     public static function sendemail($to, $subject, $body) {
-      shell_exec("cd bin/ && ./swaks --auth --server smtp.mailgun.org:587 --au postmaster@sandbox3fa628dca20c40289500f2300ae3f7db.mailgun.org --ap " . Configuration::key("smtpapi") . " --to " . $to . " --h-Subject: " . $subject . " --body " . $body);
+      shell_exec("cd bin/ && ./swaks --auth --server smtp.mailgun.org:587 --au postmaster@sandbox3fa628dca20c40289500f2300ae3f7db.mailgun.org --ap " . Authentification::key("smtp") . " --to " . $to . " --h-Subject: " . $subject . " --body " . $body);
     }
 
     public static function login($email, $password) {

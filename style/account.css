@@ -5,10 +5,6 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-body {
-  background: #EEEEEE;
-}
-
 nav {
   height: 60px;
   background: #222222;
@@ -68,4 +64,93 @@ nav {
 .centered {
   max-width: 940px;
   margin: 0 auto;
+}
+
+section {
+  float: left;
+  width: 100%;
+  background: #EEE;
+}
+
+section p {
+  max-width: 900px;
+  margin: 100px auto;
+  padding: 0 15px;
+  color: rgba(0, 0, 0, 0.7);
+  opacity: 0.7;
+}
+
+section a {
+  text-decoration: none;
+  color: #4e7cad;
+}
+
+article {
+  float: left;
+  width: 100%;
+}
+
+article p {
+  position: relative;
+  top: 50px;
+}
+
+.keypad {
+  width: 222px;
+  height: 220px;
+  position: absolute;
+  background: #FFFFFF;
+  text-align: center;
+  border-radius: 3px;
+}
+
+input {
+  position: relative;
+  top: 50px;
+  border: none;
+  width: 250px;
+  padding: 10px;
+  border: 3px solid #4E7CAD;
+  border-radius: 3px;
+  font-size: 18px;
+  color: #4E7CAD;
+}
+
+#verification {
+  position: relative;
+  top: 340px;
+}
+
+.code_input {
+  display: inline-block;
+  position: relative;
+  left: 50%;
+  width: 440px;
+  margin: -50px -220px 50 -220px;
+}
+
+.code_input input {
+  font-weight: 400px;
+  width: 50px;
+  height: 50px;
+  border: 2px solid #cccccc;
+  display: block;
+  float: left;
+  margin-right: 5px;
+  outline: 0;
+  font-size: 28px;
+  color: #cccccc;
+  line-height: 50px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.code_input input:hover {
+  color: #9b9b9b;
+}
+
+.code_input input:focus {
+  color: #4e7cad;
+  border-color: #4e7cad;
 }

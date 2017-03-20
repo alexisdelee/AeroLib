@@ -2,7 +2,7 @@
   session_start();
 
   require_once("platforms/databases/UserDAO.php");
-  require_once("controllers/Configuration.php");
+  require_once("controllers/Authentification.php");
   require_once("nav.php");
   require_once("popup.php");
 
@@ -46,6 +46,6 @@
     <script type="text/javascript" src="controllers/oXHR.js"></script>
     <script type="text/javascript" src="app.weather.js"></script>
     <script type="text/javascript" src="app.map.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo Configuration::api('googleapi'); ?>&callback=getWeather"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo Authentification::api('googlemap'); ?>&callback=getWeather"></script>
   </body>
 </html>

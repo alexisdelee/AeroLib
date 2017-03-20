@@ -5,8 +5,8 @@
     public static function draw($table) {
       $manager = PDOUtils::getSharedInstance();
 
-      $information = $manager->getAll("SELECT `COLUMN_NAME`, `DATA_TYPE` 
-                                FROM `INFORMATION_SCHEMA`.`COLUMNS` 
+      $information = $manager->getAll("SELECT `COLUMN_NAME`, `DATA_TYPE`
+                                FROM `INFORMATION_SCHEMA`.`COLUMNS`
                                 WHERE `TABLE_SCHEMA` = \"aerodrome\" AND `TABLE_NAME` = \"" . $table . "\"");
 
       $columns = InterfaceAdmin::filterHeader("COLUMN_NAME", $information);
@@ -85,7 +85,7 @@
     public static function drawHeader($columns) {
       echo "<table border=\"1\"><tr>";
 
-      foreach($columns as $column) 
+      foreach($columns as $column)
         echo "<th>" . strtoupper($column) . "</th>";
 
       echo "</tr>";
@@ -103,7 +103,7 @@
 
     public static function drawFooter($columns, $types) {
       echo "<tr>";
-      
+
       foreach($columns as $key => $column) {
         if($key == 0) {
           echo "<td>" . htmlspecialchars("<GENERATED>") . "</td>";

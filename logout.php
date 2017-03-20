@@ -8,6 +8,7 @@
       unset($_SESSION["accesstoken"]);
       unset($_SESSION["email"]);
       unset($_SESSION["statut"]);
+      unset($_SESSION["private_key"];
       unset($_SESSION["error_subscribe"]);
 
       session_destroy();
