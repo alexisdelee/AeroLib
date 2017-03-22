@@ -1,21 +1,8 @@
 <?php
-  session_start();
-
-  require_once("platforms/databases/UserDAO.php");
+  require_once("init.php");
   require_once("controllers/Authentification.php");
   require_once("nav.php");
   require_once("popup.php");
-
-  if(isset($_SESSION["accesstoken"]) && isset($_SESSION["email"])) {
-    $state = UserDAO::isConnected($_SESSION["accesstoken"], $_SESSION["email"]);
-    $_SESSION["accesstoken"] = $state;
-  } else {
-    $state = false;
-  }
-
-  if(!$state) {
-    header("Location: index.php");
-  }
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +20,7 @@
       <center>
         <p>
           <?php
-            if(isset($_SESSION["statut"]) && $_SESSION["statut"] == 2) {
+            if(Router::$permission == 2) {
               echo "<a href=\"weatherService.php\">Réactualiser manuellement le service météo</a><br><br>";
             }
           ?>

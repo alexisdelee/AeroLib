@@ -1,7 +1,5 @@
 <?php
-  session_start();
-
-  require_once("platforms/databases/UserDAO.php");
+  require_once("init.php");
 
   if(isset($_POST["email"]) && isset($_POST["password"])) {
     $_POST["email"] = trim($_POST["email"]);
@@ -9,7 +7,7 @@
     unset($_SESSION["error_subscribe"]);
 
     $user = UserDAO::login($_POST["email"], $_POST["password"]);
-    if($user == null) {
+    if($user === null) {
       $_SESSION["error_subscribe"][] = 5;
     } else {
       $_SESSION["error_subscribe"][] = 0;

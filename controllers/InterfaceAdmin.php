@@ -6,8 +6,8 @@
       $manager = PDOUtils::getSharedInstance();
 
       $information = $manager->getAll("SELECT `COLUMN_NAME`, `DATA_TYPE`
-                                FROM `INFORMATION_SCHEMA`.`COLUMNS`
-                                WHERE `TABLE_SCHEMA` = \"aerodrome\" AND `TABLE_NAME` = \"" . $table . "\"");
+                                       FROM `INFORMATION_SCHEMA`.`COLUMNS`
+                                       WHERE `TABLE_SCHEMA` = \"aerodrome\" AND `TABLE_NAME` = \"" . $table . "\"");
 
       $columns = InterfaceAdmin::filterHeader("COLUMN_NAME", $information);
       InterfaceAdmin::drawHeader($columns);

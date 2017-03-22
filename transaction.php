@@ -1,10 +1,8 @@
 <?php
-  session_start();
-
-  require_once("platforms/databases/UserDAO.php");
+  require_once("init.php");
   require_once("controllers/Authentification.php");
 
-  if(isset($_SESSION["email"]) && isset($_POST["type"])) {
+  if(isset($_POST["type"])) {
     if($_POST["type"] == "demand" && isset($_POST["amount"])) {
       $_SESSION["private_key"] = UserDAO::accesstokenManager(); // générer une clé privée temporaire
 
@@ -44,7 +42,5 @@
     }
 
     echo "false";
-  } else {
-    header("Location: index.php");
   }
 ?>

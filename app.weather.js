@@ -84,6 +84,7 @@ function getWeather(){
     }
   }
 
-  request.open('GET', 'getWeather.php');
-  request.send();
+  request.open("POST", "getWeather.php");
+  request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  request.send("access=ajax");
 }

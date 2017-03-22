@@ -1,3 +1,7 @@
+<?php
+  require_once("init.php");
+?>
+
 <nav>
   <div class="centered">
     <div class="nav-services">
@@ -6,7 +10,7 @@
       <a class="nav-service" href=".">Aéroclub</a>
     </div>
 
-    <?php if(isset($_SESSION["accesstoken"])){ ?>
+    <?php if(Router::$state){ ?>
       <div class="nav-pages">
         <a href="account.php">Compte</a>
         <a href="localisation.php">Prévision</a>

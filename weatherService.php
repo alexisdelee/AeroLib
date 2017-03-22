@@ -1,7 +1,8 @@
 <?php
-  session_start();
+  require_once("init.php");
+  // session_start();
 
-  if(isset($_SESSION["statut"]) && $_SESSION["statut"] == 2) {
+  if(Router::$permission == 2) {
     shell_exec("cd bin/ && ./daemonWeather.sh");
     header("Location: localisation.php");
   } else {

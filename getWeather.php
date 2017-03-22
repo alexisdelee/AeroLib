@@ -1,5 +1,5 @@
 <?php
-  require_once("platforms/databases/UserDAO.php");
+  require_once("init.php");
 
   $manager = PDOUtils::getSharedInstance();
   $data = $manager->getAll("SELECT * FROM weather ORDER BY idWeather DESC LIMIT 1");
