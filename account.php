@@ -17,6 +17,35 @@
     <section>
       <center>
         <p>
+          Ci-dessous est listé votre historique de factures.
+        </p>
+      </center>
+    </section>
+
+    <article id="historique">
+      <center>
+        <?php
+          $manager = PDOUtils::getSharedInstance();
+          $data = $manager->getAll("SELECT prestation, dateOfDay, costReceipt, tvaReceipt FROM user LEFT JOIN receipt ON user.idUser = receipt.idUser WHERE user.email = ? ORDER BY dateOfDay DESC", [$_SESSION["email"]]);
+
+          if(empty($data)) {
+            echo "<i style=\"color: #A61835;\">Aucune facture disponible...</i>";
+          } else {
+            echo "<ul>";
+
+            foreach($data as $value) {
+              echo "<li><strong>[" . date("Y-m-d H:i:s", $value["dateOfDay"]) . "]</strong> " . $value["prestation"] . " : " . (floatval($value["costReceipt"]) + floatval($value["tvaReceipt"])) . " euro(s)</li>";
+            }
+
+            echo "</ul>";
+          }
+        ?>
+      </center>
+    </article>
+
+    <section>
+      <center>
+        <p>
           Pour transférer de l'argent vers votre compte AEN, utilisez la zone prévue ci-dessous.<br>
           (<i>cliquez sur le bouton rouge pour annuler la transaction ou sur le bouton blanc pour la confirmer</i>)
         </p>

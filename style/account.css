@@ -154,3 +154,7 @@ input {
   color: #4e7cad;
   border-color: #4e7cad;
 }
+
+#historique {
+  margin: 100px auto;
+}

@@ -11,6 +11,9 @@
     <title>Services administrateurs</title>
     <link rel="stylesheet" type="text/css" href="style/escale.css">
     <link rel="icon" type="image/png" href="res/logo.png">
+    <style type="text/css">
+      body { background: #EEEEEE; }
+    </style>
   </head>
   <body>
     <?php

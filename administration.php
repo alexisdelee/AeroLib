@@ -1,4 +1,5 @@
 <?php
+  require_once("init.php");
   require_once("controllers/InterfaceAdmin.php");
 
   if(!isset($_POST["action"])) {

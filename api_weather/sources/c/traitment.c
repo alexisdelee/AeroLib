@@ -6,6 +6,7 @@
 #include <mysql/mysql.h>
 #include "../h/traitment.h"
 
+// Analyse du flux en JSON
 int json_analyze(const char *conf, const char *json)
 {
     int error;
@@ -33,6 +34,7 @@ int jsoneq(const char *json, jsmntok_t *tok, const char *keyword)
     }
 }
 
+// Fonction pour analyse avant insertion dans la BDD
 int insert_db(const char *conf, const char *json, jsmntok_t *tokens, int frequency, char (*keywords)[12])
 {
     char response[100] = "";
@@ -82,6 +84,7 @@ int insert_db(const char *conf, const char *json, jsmntok_t *tokens, int frequen
     return readConf(conf, request);
 }
 
+// Fonction pour lire le fichier de configuration de la BDD
 int readConf(const char *path, const char *request)
 {
     FILE *fconf = NULL;
@@ -132,12 +135,12 @@ int readConf(const char *path, const char *request)
     }
 }
 
+// Fonction pour injection en BDD
 int inject_db(const char *request, const char *host, const char *database, const char *user, const char *password)
 {
     MYSQL *mysql;
 
     mysql = mysql_init(NULL);
-    // mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "");
     mysql_options(mysql, MYSQL_SET_CHARSET_NAME, "utf8");
     mysql_options(mysql, MYSQL_INIT_COMMAND, "SET NAMES utf8");
 
@@ -151,6 +154,7 @@ int inject_db(const char *request, const char *host, const char *database, const
     return 1;
 }
 
+// Fonction de création du fichier log
 int logfile(int status, long date, const char *message)
 {
     FILE *flog = NULL;
