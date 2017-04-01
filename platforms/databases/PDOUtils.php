@@ -27,11 +27,13 @@
       return null;
     }
 
-    public function exec($sql, $params = null) {
+    public function exec($sql, $params = null, $insertOption = false) {
       $statement = $this->pdo_->prepare($sql);
       if($statement && $statement->execute($params)) {
         unset($statement);
-        return true;
+
+        if($insertOption) return $this->pdo_->lastInsertId();
+        else return true;
       }
 
       return false;

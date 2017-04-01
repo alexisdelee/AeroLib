@@ -1,0 +1,11 @@
+{
+  "name": "aen",
+  "main": "core/calendar.html",
+  "version": "1.0.0",
+  "window": {
+    "height": 700,
+    "width": 450,
+    "resizable": false,
+    "frame": false
+  }
+}

@@ -26,15 +26,15 @@
       <center>
         <?php
           $manager = PDOUtils::getSharedInstance();
-          $data = $manager->getAll("SELECT prestation, dateOfDay, costReceipt, tvaReceipt FROM user LEFT JOIN receipt ON user.idUser = receipt.idUser WHERE user.email = ? ORDER BY dateOfDay DESC", [$_SESSION["email"]]);
+          $data = $manager->getAll("SELECT idReceipt, prestation, dateOfDay, costReceipt, tvaReceipt FROM user LEFT JOIN receipt ON user.idUser = receipt.idUser WHERE user.email = ? ORDER BY dateOfDay DESC", [$_SESSION["email"]]);
 
-          if(empty($data)) {
+          if($data[0]["idReceipt"] === null) {
             echo "<i style=\"color: #A61835;\">Aucune facture disponible...</i>";
           } else {
             echo "<ul>";
 
             foreach($data as $value) {
-              echo "<li><strong>[" . date("Y-m-d H:i:s", $value["dateOfDay"]) . "]</strong> " . $value["prestation"] . " : " . (floatval($value["costReceipt"]) + floatval($value["tvaReceipt"])) . " euro(s)</li>";
+              echo "<input type=\"checkbox\" id=\"facture-" . $value["idReceipt"] . "\"><label for=\"facture-" . $value["idReceipt"] . "\"><strong>[" . date("Y-m-d H:i:s", $value["dateOfDay"]) . "]</strong> " . $value["prestation"] . " : " . (floatval($value["costReceipt"]) + floatval($value["tvaReceipt"])) . " euro(s) <a data-id=\"" . $value["idReceipt"] . "\" href=\"phptopdf.php?id=" . $value["idReceipt"] . "\" title=\"Facture au format PDF\">format PDF</a></label><br>";
             }
 
             echo "</ul>";
@@ -60,7 +60,7 @@
 
           echo "<p>Crédit sur votre compte : " . $data[0]["credit"] . "€</p>";
         ?>
-        <input type="text">
+        <input type="text" id="credit">
       </center>
     </article>
 
@@ -84,7 +84,7 @@
     <script type="text/javascript" src="controllers/oXHR.js"></script>
     <script type="text/javascript" src="app.popup.js"></script>
     <script type="text/javascript">
-      let target = document.querySelector("input");
+      let target = document.querySelector("#credit");
       let amount = 0;
 
       let keypad = new Keypad();

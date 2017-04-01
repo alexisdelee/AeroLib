@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="map.css">
+	</head>
+	<body>
+		<header>
+			<h1>AEN</h1>
+			<h3>Accéder au planning</h3>
+
+			<div class="score">
+				0
+			</div>
+
+			<div class="chart-wrapper"></div>
+		</header>
+
+		<script type="text/javascript" src="libs/velocity/velocity.min.js"></script>
+		<script type="text/javascript" src="libs/moment/moment.js"></script>
+		<script type="text/javascript" src="interaction.js"></script>
+		<script type="text/javascript">
+			document.querySelector(".score").textContent = moment().format("DD/MM/YYYY HH:mm");
+		</script>
+	</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "aen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexis Delée",
+  "contributors": "Cédric Nanteau",
+  "license": "ISC",
+  "window": {
+    "height": 590,
+    "width": 400,
+    "resizable": false,
+    "frame": false
+  }
+}

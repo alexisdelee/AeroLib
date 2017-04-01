@@ -2,26 +2,28 @@
   require_once(__DIR__ . "/../platforms/databases/UserDAO.php");
 
   class InterfaceAdmin {
-    public static function draw($table) {
+    public function __construct() {}
+
+    public function draw($table) {
       $manager = PDOUtils::getSharedInstance();
 
       $information = $manager->getAll("SELECT `COLUMN_NAME`, `DATA_TYPE`
                                        FROM `INFORMATION_SCHEMA`.`COLUMNS`
                                        WHERE `TABLE_SCHEMA` = \"aerodrome\" AND `TABLE_NAME` = \"" . $table . "\"");
 
-      $columns = InterfaceAdmin::filterHeader("COLUMN_NAME", $information);
-      InterfaceAdmin::drawHeader($columns);
+      $columns = $this->filterHeader("COLUMN_NAME", $information);
+      $this->drawHeader($columns);
 
       $data = $manager->getAll("SELECT * FROM " . $table . " ORDER BY id" . ucfirst($table) . " DESC");
       while(($cells = each($data))) {
-        InterfaceAdmin::drawContent($cells["value"]);
+        $this->drawContent($cells["value"]);
       }
 
-      $types = InterfaceAdmin::filterHeader("DATA_TYPE", $information);
-      InterfaceAdmin::drawFooter($columns, $types);
+      $types = $this->filterHeader("DATA_TYPE", $information);
+      $this->drawFooter($columns, $types);
     }
 
-    public static function update($table, $column, $value, $id) {
+    public function update($table, $column, $value, $id) {
       switch($column) {
         case "password":
           $value = UserDAO::passwordManager($value, true);
@@ -37,7 +39,7 @@
       $manager->exec("UPDATE " . $table . " SET " . $column . " = ? WHERE id" . ucfirst($table) . " = ?", [$value, $id]);
     }
 
-    public static function insert($table, $columns, $values) {
+    public function insert($table, $columns, $values) {
       $columns = explode("##", $columns);
       $values = explode("##", $values);
 
@@ -60,7 +62,7 @@
       $manager->exec("INSERT INTO " . $table . "(" . implode(",", $columns) . ") VALUES(" . implode(",", $secret) . ")", array_merge($values));
     }
 
-    public static function filterHeader($filter, $arr) {
+    private function filterHeader($filter, $arr) {
       $array = [];
 
       foreach($arr as $value) {
@@ -72,8 +74,8 @@
       return $array;
     }
 
-    public static function exceptionDraw($column, $cell) {
-      if(substr($column, 0, 2) == "id") {
+    private function exceptionDraw($column, $cell, $id) {
+      if($id) {
         return "<td data-table=\"" . $column . "\">" . $cell . "</td>";
       } else {
         return "<td contentEditable=\"true\" class=\"data\" data-column=\"" . $column . "\">"
@@ -82,7 +84,7 @@
       }
     }
 
-    public static function drawHeader($columns) {
+    private function drawHeader($columns) {
       echo "<table border=\"1\"><tr>";
 
       foreach($columns as $column)
@@ -91,17 +93,22 @@
       echo "</tr>";
     }
 
-    public static function drawContent($cells) {
+    private function drawContent($cells) {
       echo "<tr>";
 
+      $start = true;
       foreach($cells as $column => $cell) {
-        echo InterfaceAdmin::exceptionDraw($column, $cell);
+        echo $this->exceptionDraw($column, $cell, $start);
+
+        if($start) {
+          $start = false;
+        }
       }
 
       echo "</tr>";
     }
 
-    public static function drawFooter($columns, $types) {
+    private function drawFooter($columns, $types) {
       echo "<tr>";
 
       foreach($columns as $key => $column) {

@@ -4,7 +4,9 @@
   require_once("platforms/databases/UserDAO.php");
   require_once("controllers/Router.php");
 
-  Router::$allowAreas = [
+  $router = new Router();
+
+  $router->allowAreas = [
     "escale",
     "aeroclub",
     "account",
@@ -12,10 +14,12 @@
     "weatherService",
     "logout",
     "verifemail",
-    "phpmyadmin"
+    "phpmyadmin",
+    "phptopdf",
+    "lab"
   ];
 
-  Router::$exceptions = [
+  $router->exceptions = [
     "root" => [
       "escale" => "phpmyadmin.php",
       "aeroclub" => "phpmyadmin.php",
@@ -26,5 +30,5 @@
     ]
   ];
 
-  Router::access(pathinfo($_SERVER["REQUEST_URI"], PATHINFO_FILENAME));
+  $router->access(pathinfo($_SERVER["REQUEST_URI"], PATHINFO_FILENAME));
 ?>

@@ -1,0 +1,70 @@
+@font-face {
+  font-family: "arvo";
+  src: url("font/arvo.ttf");
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 450px;
+  height: 700px;
+  /* background: #305587; */
+  background: #1F2834;
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
+}
+
+header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 450px;
+  height: 75%;
+  /* background: #365D93; */
+  background: #FFFFFF;
+}
+
+header h1 {
+  position: absolute;
+  width: 100%;
+  top: calc(50% - 25px);
+  text-align: center;
+  font-family: "arvo";
+  /* color: #224370; */
+  color: #B63B4D;
+  font-size: 50px;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+header h3 {
+  position: absolute;
+  width: 100%;
+  top: calc(50% + 25px);
+  text-align: center;
+  font-family: "arvo";
+  /* color: #224370; */
+  color: #B63B4D;
+  font-size: 17px;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.score {
+  position: absolute;
+  width: 100%;
+  top: calc(25% - 25px);
+  text-align: center;
+  font-family: "arvo";
+  color: #1F2834;
+  font-size: 40px;
+  opacity: 0;
+  text-transform: uppercase;
+  font-weight: bold;
+}

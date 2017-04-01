@@ -13,7 +13,7 @@ function choosePrestation(child) {
   table = child.id; // stock id
 }
 
-document.querySelector("select").addEventListener("change", (e) => {
+/* document.querySelector("select").addEventListener("change", (e) => {
   let target = e.target;
   let table = target.selectedOptions[0].dataset.nexttable
   let type = target.value;
@@ -129,4 +129,4 @@ function db_query(query, callback) {
 
 String.prototype.capitalizeFirstLetter = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
-}
+} */

@@ -10,7 +10,7 @@
       <a class="nav-service" href=".">Aéroclub</a>
     </div>
 
-    <?php if(Router::$state){ ?>
+    <?php if($router->state){ ?>
       <div class="nav-pages">
         <a href="account.php">Compte</a>
         <a href="localisation.php">Prévision</a>

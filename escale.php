@@ -43,17 +43,8 @@
                 ]
               ];
 
-              $credit = $manager->getAll("SELECT credit FROM `user` WHERE email = ?", [$_SESSION["email"]]);
-              $isCredit = (int)$credit[0]["credit"] > 0 ? true : false;
-
               foreach($prestations as $prestation) {
-                $data = $manager->getAll("SELECT id" . ucfirst($prestation["table"]) . " FROM " . $prestation["table"]);
-
-                if($isCredit && !empty($data[0]["id" . ucfirst($prestation["table"])])) {
-                  echo "<a onclick=\"choosePrestation(" . $prestation["table"] . "); return false;\" title=\"" . $prestation["title"] . "\" href=\"#" . $prestation["table"] . "\"><div class=\"prestations available\"><img style=\"width: 100%; height: 100%; opacity: 0.8\" src=\"res/prestations/" . $prestation["path"] . "\"></div></a>";
-                } else {
-                  echo "<a title=\"" . $prestation["title"] . "\" href=\"#" . $prestation["table"] . "\"><div class=\"prestations\"><img style=\"width: 100%; height: 100%; opacity: 0.2; cursor: default;\" src=\"res/prestations/" . $prestation["path"] . "\"></div></a>";
-                }
+                echo "<a onclick=\"choosePrestation(" . $prestation["table"] . "); return false;\" title=\"" . $prestation["title"] . "\" href=\"#" . $prestation["table"] . "\"><div class=\"prestations available\"><img style=\"width: 100%; height: 100%; opacity: 0.8\" src=\"res/prestations/" . $prestation["path"] . "\"></div></a>";
               }
             ?>
           </div>
@@ -65,30 +56,35 @@
       <center>
         <p>
           <div class="prestation" id="category" style="display: none;">
-            <select>
+            <!-- <select>
               <?php
-                $data = $manager->getAll("SELECT idModel, typeModel FROM `model`");
+                /* $data = $manager->getAll("SELECT idModel, typeModel FROM `model`");
                 echo "<option value=\"default\">Type d'avion</option>";
                 foreach($data as $value) {
                   echo "<option value=\"idModel\" data-id=\"" . $value["idModel"] . "\" data-nexttable=\"landing\">" . utf8_encode($value["typeModel"]) . "</option>";
-                }
+                } */
               ?>
             </select>
 
             <select>
               <?php
-                $data = $manager->getAll("SELECT idAcoustic, groupAcoustic FROM `acoustic`");
+                /* $data = $manager->getAll("SELECT idAcoustic, groupAcoustic FROM `acoustic`");
                 echo "<option value=\"default\">Groupe acoustique</option>";
                 foreach($data as $value) {
                   echo "<option value=\"idAcoustic\" data-id=\"" . $value["idAcoustic"] . "\">" . utf8_encode($value["groupAcoustic"]) . "</option>";
-                }
+                } */
               ?>
             </select><br>
 
             <div class="row">
               <input name="form" id="date" type="text" placeholder="24-06-2017_13:14">
               <label for="date">Date</label>
-            </div><br><br>
+            </div><br><br> -->
+
+            <?php
+              $data = $manager->getAll("SELECT idReceipt FROM `receipt` LEFT JOIN `user` ON receipt.idUser = user.idUser WHERE user.email = ? AND receipt.prestation = \"Atterrissage\"", [$_SESSION["email"]]);
+              var_dump($data);
+            ?>
           </div>
           <div class="prestation" id="reservoir" style="display: none;">
             <select>

@@ -21,6 +21,9 @@
 
     UserDAO::sendemail($_POST["email"], "Inscription", "Validez votre identite a l\'adresse suivante : aen.fr/verifemail.php?accesstoken=" . $accesstoken);
 
+    $manager = PDOUtils::getSharedInstance();
+    $manager->exec("INSERT INTO `receipt`(idUser) VALUES((SELECT idUser FROM `user` WHERE email = ?))", [$_SESSION["email"]]); // création d'une première facture vide
+
     echo "true";
   } else {
     echo join(":", $_SESSION["error_subscribe"]);

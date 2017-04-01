@@ -20,7 +20,7 @@
       <center>
         <p>
           <?php
-            if(Router::$permission == 2) {
+            if($router->permission == 2) {
               echo "<a href=\"weatherService.php\">Réactualiser manuellement le service météo</a><br><br>";
             }
           ?>

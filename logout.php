@@ -1,7 +1,7 @@
 <?php
   require_once("init.php");
 
-  if(Router::$state) {
+  if($router->state) {
     unset($_SESSION["accesstoken"]);
     unset($_SESSION["email"]);
     unset($_SESSION["statut"]);
