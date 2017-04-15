@@ -13,23 +13,30 @@
     <?php if($router->state){ ?>
       <?php
         $manager = PDOUtils::getSharedInstance();
-        $services = $manager->getAll("
-          SELECT count(service.idService)
-          FROM `service`
-            LEFT JOIN `receipt` ON service.idReceipt = receipt.idReceipt
-          WHERE receipt.idUser =
-            (SELECT idUser
-            FROM `user`
-            WHERE email = ?)
-            AND isPaid = 0
-          ORDER BY receipt.idReceipt
+        $services = 0;
+
+        $lastIdService = $manager->getAll("
+          SELECT receipt.idReceipt
+          FROM `receipt`
+            LEFT JOIN `user` ON receipt.idUser = user.idUser
+          WHERE user.email = ?
+          ORDER BY receipt.idReceipt DESC
           LIMIT 1
         ", [$_SESSION["email"]]);
 
-        if(isset($services)) {
-          $services = $services[0]["count(service.idService)"];
-        } else {
-          $services = 0;
+        if(!empty($lastIdService)) {
+          $services = $manager->getAll("
+            SELECT count(idService) AS total
+            FROM `service`
+            WHERE idReceipt = ?
+            LIMIT 1
+          ", [$lastIdService[0]["idReceipt"]]);
+
+          if(isset($services)) {
+            $services = $services[0]["total"];
+          } else {
+            $services = 0;
+          }
         }
       ?>
 

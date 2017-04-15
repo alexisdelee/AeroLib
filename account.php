@@ -27,11 +27,11 @@
         <?php
           $manager = PDOUtils::getSharedInstance();
           $data = $manager->getAll("
-            SELECT idReceipt, creation, totalCost, totalTva
-            FROM user 
-              LEFT JOIN receipt ON user.idUser = receipt.idUser 
+            SELECT receipt.idReceipt, receipt.creation, receipt.totalCost, receipt.totalTva, receipt.isPaid
+            FROM `user` 
+              LEFT JOIN `receipt` ON user.idUser = receipt.idUser 
             WHERE user.email = ? 
-              AND receipt.isPaid = 1
+              AND receipt.creation <> 0
             ORDER BY idReceipt DESC
           ", [$_SESSION["email"]]);
 
@@ -41,7 +41,9 @@
             echo "<ul>";
 
             foreach($data as $value) {
-              echo "<strong>[" . date("d/m/Y H:i:s", $value["creation"]) . "]</strong> : " . number_format(floatval($value["totalCost"]) + floatval($value["totalTva"]), 2, ",", " ") . " euro(s) <a target=\"_blank\" data-id=\"" . $value["idReceipt"] . "\" href=\"phptopdf.php?id=" . $value["idReceipt"] . "\" title=\"Facture au format PDF\">format PDF</a><br>";
+              echo "<strong>[" . date("d/m/Y H:i:s", $value["creation"]) . "]</strong> : " . 
+                ($value["isPaid"] == 1 ? number_format(floatval($value["totalCost"]) + floatval($value["totalTva"]), 2, ",", " ") . " euro(s)" : "(<a onclick=\"payNow(" . $value["idReceipt"] . "); return false;\" style=\"color: #000;\" href=\"#\">paiement immédiat</a>)") . 
+              " <a target=\"_blank\" data-id=\"" . $value["idReceipt"] . "\" href=\"phptopdf.php?id=" . $value["idReceipt"] . "\" title=\"Facture au format PDF\">format PDF</a><br>";
             }
 
             echo "</ul>";
@@ -89,8 +91,22 @@
     <script type="text/javascript" src="controllers/AutotabMagic.js"></script>
     <script type="text/javascript" src="controllers/Keypad.js"></script>
     <script type="text/javascript" src="controllers/oXHR.js"></script>
+    <script type="text/javascript" src="controllers/Request.js"></script>
+    <script type="text/javascript" src="controllers/oXHR.js"></script>
     <script type="text/javascript" src="app.popup.js"></script>
     <script type="text/javascript">
+      // payer facture maintenant
+      function payNow(id) {
+        let request = new Request();
+        request.post("service.php", "type=paid&receipt=" + id, (response) => {
+          if(response === "ok") {
+            window.location.reload();
+          } else {
+            popup.manager.open("<span style=\"color: #A61835\">" + response + "</span>");
+          }
+        });
+      }
+
       // transère d'argent
       let target = document.querySelector("#credit");
       let amount = 0;

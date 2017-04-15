@@ -26,49 +26,58 @@
       <center>
         <?php
           $manager = PDOUtils::getSharedInstance();
-          $data = $manager->getAll("
-            SELECT service.idService, service.description, service.subscription, service.costService, service.tvaService, service.dateStart, service.dateEnd
-            FROM service 
-              LEFT JOIN receipt ON service.idReceipt = receipt.idReceipt 
-            WHERE receipt.idUser =
-              (SELECT idUser
-              FROM `user`
-              WHERE email = ?)
-              AND isPaid = 0
-            ORDER BY service.idService DESC
+
+          $lastIdService = $manager->getAll("
+            SELECT receipt.idReceipt
+            FROM `receipt`
+              LEFT JOIN `user` ON receipt.idUser = user.idUser
+            WHERE user.email = ?
+            ORDER BY receipt.idReceipt DESC
+            LIMIT 1
           ", [$_SESSION["email"]]);
 
-          if(empty($data)) {
-            echo "<i style=\"color: #A61835;\">Aucun service dans votre panier...</i>";
-          } else {
-            echo "<ul>";
+          if(!empty($lastIdService)) {
+            $data = $manager->getAll("
+              SELECT idService, description, subscription, costService, tvaService, dateStart, dateEnd
+              FROM `service`
+              WHERE idReceipt = ?
+              ORDER BY idService DESC
+            ", [$lastIdService[0]["idReceipt"]]);
 
-            foreach($data as $value) {
-              echo "<input type=\"checkbox\" id=\"service-" . $value["idService"] . "\"><label oncontextmenu=\"service(" . $value["idService"] . "); return false;\" for=\"service-" . $value["idService"] . "\"><small><strong>[" . date("d/m/Y H:i:s", $value["subscription"]) . "]</strong></small> " . utf8_encode($value["description"]) . "</label>";
-              echo "<br>
-                    <div style=\"display: none; width: 100%; margin: 20px 0;\" class=\"description\" id=\"description-" . $value["idService"] . "\">
-                      <table>
-                        <tr>
-                          <th>Date de début</th>
-                          <th>Date de fin</th>
-                          <th>HT</th>
-                          <th>TVA</th>
-                          <th>TTC</th>
-                        </tr>
-                        <tr>
-                          <td>" . date("d/m/Y H:i:s", $value["dateStart"]) . "</td>
-                          <td>" . date("d/m/Y H:i:s", $value["dateEnd"]) . "</td>
-                          <td>" . number_format(floatval($value["costService"]), 2, ",", " ") . "€</td>
-                          <td>" . number_format(floatval($value["tvaService"]), 2, ",", " ") . "€</td>
-                          <td>" . number_format(floatval($value["costService"]) + floatval($value["tvaService"]), 2, ",", " ") . "€</td>
-                        </tr>
-                      </table>
-                    </div>";
+            if(empty($data)) {
+              echo "<i style=\"color: #A61835;\">Aucun service dans votre panier...</i>";
+            } else {
+              echo "<ul>";
+
+              foreach($data as $value) {
+                echo "<input type=\"checkbox\" id=\"service-" . $value["idService"] . "\"><label oncontextmenu=\"service(" . $value["idService"] . "); return false;\" for=\"service-" . $value["idService"] . "\"><small><strong>[" . date("d/m/Y H:i:s", $value["subscription"]) . "]</strong></small> " . utf8_encode($value["description"]) . "</label>";
+                echo "<br>
+                      <div style=\"display: none; width: 100%; margin: 20px 0;\" class=\"description\" id=\"description-" . $value["idService"] . "\">
+                        <table>
+                          <tr>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
+                            <th>HT</th>
+                            <th>TVA</th>
+                            <th>TTC</th>
+                          </tr>
+                          <tr>
+                            <td>" . date("d/m/Y H:i:s", $value["dateStart"]) . "</td>
+                            <td>" . date("d/m/Y H:i:s", $value["dateEnd"]) . "</td>
+                            <td>" . number_format(floatval($value["costService"]), 2, ",", " ") . "€</td>
+                            <td>" . number_format(floatval($value["tvaService"]), 2, ",", " ") . "€</td>
+                            <td>" . number_format(floatval($value["costService"]) + floatval($value["tvaService"]), 2, ",", " ") . "€</td>
+                          </tr>
+                        </table>
+                      </div>";
+              }
+
+              echo "</ul>";
+              echo "<button id=\"accept\">Valider le panier</button>";
+              echo "<button id=\"cancel\">Supprimer</button>";
             }
-
-            echo "</ul>";
-            echo "<button id=\"accept\">Valider le panier</button>";
-            echo "<button id=\"cancel\">Supprimer</button>";
+          } else {
+            echo "<i style=\"color: #A61835;\">Aucun service dans votre panier...</i>";
           }
         ?>
       </center>
