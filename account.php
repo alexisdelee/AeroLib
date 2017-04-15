@@ -26,15 +26,22 @@
       <center>
         <?php
           $manager = PDOUtils::getSharedInstance();
-          $data = $manager->getAll("SELECT idReceipt, prestation, dateOfDay, costReceipt, tvaReceipt FROM user LEFT JOIN receipt ON user.idUser = receipt.idUser WHERE user.email = ? ORDER BY dateOfDay DESC", [$_SESSION["email"]]);
+          $data = $manager->getAll("
+            SELECT idReceipt, creation, totalCost, totalTva
+            FROM user 
+              LEFT JOIN receipt ON user.idUser = receipt.idUser 
+            WHERE user.email = ? 
+              AND receipt.isPaid = 1
+            ORDER BY idReceipt DESC
+          ", [$_SESSION["email"]]);
 
-          if($data[0]["idReceipt"] === null) {
+          if(empty($data)) {
             echo "<i style=\"color: #A61835;\">Aucune facture disponible...</i>";
           } else {
             echo "<ul>";
 
             foreach($data as $value) {
-              echo "<input type=\"checkbox\" id=\"facture-" . $value["idReceipt"] . "\"><label for=\"facture-" . $value["idReceipt"] . "\"><strong>[" . date("Y-m-d H:i:s", $value["dateOfDay"]) . "]</strong> " . $value["prestation"] . " : " . (floatval($value["costReceipt"]) + floatval($value["tvaReceipt"])) . " euro(s) <a data-id=\"" . $value["idReceipt"] . "\" href=\"phptopdf.php?id=" . $value["idReceipt"] . "\" title=\"Facture au format PDF\">format PDF</a></label><br>";
+              echo "<strong>[" . date("d/m/Y H:i:s", $value["creation"]) . "]</strong> : " . number_format(floatval($value["totalCost"]) + floatval($value["totalTva"]), 2, ",", " ") . " euro(s) <a target=\"_blank\" data-id=\"" . $value["idReceipt"] . "\" href=\"phptopdf.php?id=" . $value["idReceipt"] . "\" title=\"Facture au format PDF\">format PDF</a><br>";
             }
 
             echo "</ul>";
@@ -68,7 +75,7 @@
       <p>
         <form class="code_input">
           <center>
-            <span>Entrez le code de vérification reçu par mail :</span><br>
+            <span>Entrez le code de confirmation reçu par mail :</span><br>
           </center>
           <?php
             for($input = 0; $input < 8; $input++) {
@@ -84,6 +91,7 @@
     <script type="text/javascript" src="controllers/oXHR.js"></script>
     <script type="text/javascript" src="app.popup.js"></script>
     <script type="text/javascript">
+      // transère d'argent
       let target = document.querySelector("#credit");
       let amount = 0;
 
@@ -99,9 +107,7 @@
         let request = new XMLHttpRequest();
         request.onreadystatechange = function(){
           if(request.readyState == 4 && request.status == 200 && amount != 0){
-            let span = document.createElement("span");
-            span.textContent = "Un mail avec le code de confirmation vous a été envoyé.";
-            popup.manager.open(span);
+            popup.manager.open("<span>Un mail avec le code de confirmation vous a été envoyé.</span>");
           }
         }
 
@@ -125,9 +131,7 @@
             if(request.responseText == "true") {
               window.location.reload();
             } else {
-              let span = document.createElement("span");
-              span.textContent = "Code invalide.";
-              popup.manager.open(span);
+              popup.manager.open("<span>Code invalide.</span");
             }
           }
         }

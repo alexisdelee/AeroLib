@@ -242,12 +242,25 @@
           alert("Vous avez bien été enregistré(e) pour le " + moment(date.UTCToLocale("Europe/London")).format("DD/MM/YYYY à HH:mm") + ".\nMerci de bien vouloir confirmer votre venu minimum 24h avant votre atterrissage.");
         } else if(state & 128) {
           alert("Impossible d'attérir à cette heure-là, l'emplacement est déjà réservé.");
-        } else if(state & 256) {
-          data.date = (new Date()).timestamp();
+        } else if(state & 256) { // réactulisation du service
+          let manager = new MomentUtils();
 
           let request = new Request();
           request.post("getInformation.php", "type=landing&domain=update&data=" + JSON.stringify(data), (response) => {
-            console.log(response);
+            switch(response) {
+              case "undefined": // non reconnu par le système
+                alert("Aucune demande pour le " + moment(option, "DD/MM/YYYY HH:mm").format("DD/MM/YYYY à HH:mm") + " venant de vous n'a été enregistrée.");
+                break;
+              case "too_early": // plus de 48h en avance
+                alert("Vous avez confirmé trop tôt votre présence pour le " + moment(option, "DD/MM/YYYY HH:mm").format("DD/MM/YYYY à HH:mm") + ".\nVeuillez réessayer maximum 48h avant votre atterrissage.");
+                break;
+              case "ok": // pile dans le temps
+                alert("Votre demande d'atterrissage pour le " + moment(option, "DD/MM/YYYY HH:mm").format("DD/MM/YYYY à HH:mm") + " a bien été vérifiée et acceptée.");
+                break;
+              case "too_late": // inférieur à 24h avant le mouvement
+                alert("Vous n'avez pas pu confirmer 24h en avance votre atterrissage.\nVotre demande a été annulée.");
+                break;
+            }
           });
         }
       }

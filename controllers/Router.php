@@ -65,5 +65,20 @@
         return false;
       }
     }
+
+    public function rewriteUrl($key, $value) {
+      require_once("libs/php/build_http_url.php");
+
+      $url = parse_url($_SERVER["REQUEST_URI"]);
+      if(!empty($url["query"])) {
+        parse_str($url["query"], $params); // analyse l'url
+      }
+
+      $params[$key] = $value; // on récrit la valeur si elle existe déjà, sinon on l'a crée
+
+      $url["path"] = basename($url["path"]);
+      $url["query"] = http_build_query($params);
+      return implode("?", $url);
+    }
   }
 ?>

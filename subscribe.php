@@ -19,10 +19,10 @@
     $user = new User($_POST["name"], $_POST["password"], $_POST["email"], $_POST["age"]);
     $accesstoken = UserDAO::register($user);
 
-    UserDAO::sendemail($_POST["email"], "Inscription", "Validez votre identite a l\'adresse suivante : aen.fr/verifemail.php?accesstoken=" . $accesstoken);
-
     $manager = PDOUtils::getSharedInstance();
-    $manager->exec("INSERT INTO `receipt`(idUser) VALUES((SELECT idUser FROM `user` WHERE email = ?))", [$_SESSION["email"]]); // création d'une première facture vide
+    $manager->exec("INSERT INTO `receipt`(idUser) VALUES((SELECT idUser FROM `user` WHERE email = ?))", [$_POST["email"]]); // création d'une première facture vide
+
+    UserDAO::sendemail($_POST["email"], "Inscription", "Validez votre identite a l\'adresse suivante : aen.fr/verifemail.php?accesstoken=" . $accesstoken);
 
     echo "true";
   } else {

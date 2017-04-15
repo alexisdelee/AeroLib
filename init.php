@@ -9,20 +9,21 @@
   $router->allowAreas = [
     "escale",
     "aeroclub",
+    "basket",
     "account",
     "localisation",
     "weatherService",
     "logout",
     "verifemail",
     "phpmyadmin",
-    "phptopdf",
-    "lab"
+    "phptopdf"
   ];
 
   $router->exceptions = [
     "root" => [
       "escale" => "phpmyadmin.php",
       "aeroclub" => "phpmyadmin.php",
+      "basket" => "phpmyadmin.php",
       "account" => "phpmyadmin.php"
     ],
     "user" => [

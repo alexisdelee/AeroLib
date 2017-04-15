@@ -12,142 +12,212 @@
     <link rel="stylesheet" type="text/css" href="style/popup.css">
     <link rel="stylesheet" type="text/css" href="style/escale.css">
     <link rel="icon" type="image/png" href="res/logo.png">
+    <style type="text/css">
+      .min-select {
+        padding: 3px;
+      }
+
+      input[type="text"] {
+        width: 100px;
+        padding: 4px;
+      }
+    </style>
   </head>
   <body>
-    <section>
-      <center>
-        <p style="margin: 0px auto;">
-          <div id="container">
-            <?php
-              $manager = PDOUtils::getSharedInstance();
-              $prestations = [
-                [
-                  "table" => "category",
-                  "title" => "Atterrissage",
-                  "path" => "landing.png"
-                ],
-                [
-                  "table" => "reservoir",
-                  "title" => "Avitaillement",
-                  "path" => "reservoir.png"
-                ],
-                [
-                  "table" => "area",
-                  "title" => "Stationnement",
-                  "path" => "area.png"
-                ],
-                [
-                  "table" => "cleaning",
-                  "title" => "Nettoyage",
-                  "path" =>"cleaning.png"
-                ]
-              ];
+    <div class="container">
+      <?php if(isset($_GET["prestation"], $_GET["matricule"], $_GET["data"])) { ?>
+        <section style="position: relative; top: -100px;">
+          <p>
+            <center>
+              Vous avez sélectionné l'avion de matricule <?php echo $_GET["matricule"]; ?>.<br>
+              <small><a title="changer de matricule" href="#" onclick="changeMatricule(); return false;">changer de matricule</a></small>
+            </center>
+          </p>
+        </section>
 
-              foreach($prestations as $prestation) {
-                echo "<a onclick=\"choosePrestation(" . $prestation["table"] . "); return false;\" title=\"" . $prestation["title"] . "\" href=\"#" . $prestation["table"] . "\"><div class=\"prestations available\"><img style=\"width: 100%; height: 100%; opacity: 0.8\" src=\"res/prestations/" . $prestation["path"] . "\"></div></a>";
-              }
-            ?>
-          </div>
-        </p>
-      </center>
-    </section>
+        <article>
+          <center>
+            <p>
+              A quelle date souhaitez-vous avoir accès à la prestation ? <input id="date" type="text" style="width: 150px;" placeholder="10/04/2017 13:13"><br><br>
 
-    <article id="prestations">
-      <center>
-        <p>
-          <div class="prestation" id="category" style="display: none;">
-            <!-- <select>
+              <button id="accept">Ajouter au panier</button>
+              <button id="cancel" onclick="window.location.href = 'escale.php'">Annuler</button>
+            </p>
+          </center>
+        </article>
+      <?php } else if(isset($_GET["prestation"], $_GET["data"])) { ?>
+        <section id="plane" style="position: relative; top: -100px;">
+            <p>
+              Choix d'un avion :<br>
+              &emsp;<input type="radio" name="plane" id="select"><label for="select"> sélectionner un avion pré-enregisté</label>
+
               <?php
-                /* $data = $manager->getAll("SELECT idModel, typeModel FROM `model`");
-                echo "<option value=\"default\">Type d'avion</option>";
-                foreach($data as $value) {
-                  echo "<option value=\"idModel\" data-id=\"" . $value["idModel"] . "\" data-nexttable=\"landing\">" . utf8_encode($value["typeModel"]) . "</option>";
-                } */
+                $manager = PDOUtils::getSharedInstance();
+                $matricules = $manager->getAll("
+                  SELECT matricule
+                  FROM `plane`
+                    LEFT JOIN `user` ON plane.idUser = user.idUser
+                  WHERE user.email = ?
+                ", [$_SESSION["email"]]);
+
+                echo "<select id=\"matricules\">";
+                if(empty($matricules)) {
+                  echo "<option>aucun avion en réserve</option>";
+                } else {
+                  echo "<option>" . count($matricules) . " matricule(s) enregistré(s)</option>";
+                  foreach($matricules as $matricule) {
+                    echo "<option>" . utf8_encode($matricule["matricule"]) . "</option>";
+                  }
+                }
+                echo "</select><br>";
               ?>
-            </select>
 
-            <select>
+              &emsp;<input type="radio" name="plane" id="register"><label for="register"> enregistrer un nouvel avion</label><br><br>
+              <div id="subscribe" style="display: none;">
+                <table>
+                  <tr>
+                    <th>Matricule</th>
+                    <th>Longueur</th>
+                    <th>Envergure</th>
+                    <th>Masse maximum</th>
+                    <th>Modèle</th>
+                    <th>Groupe acoustique</th>
+                    <th></th>
+                  </tr>
+                  <tr>
+                    <td><input type="text" placeholder="8 caractères"></td>
+                    <td><input type="text" placeholder="en mètre"></td>
+                    <td><input type="text" placeholder="en mètre"></td>
+                    <td><input type="text" placeholder="en kg"></td>
+                    <td>
+                      <select class="min-select">
+                        <?php
+                          $result = $manager->getAll("SELECT typeModel FROM `model`");
+                          foreach($result as $data) {
+                            echo "<option>" . utf8_encode($data["typeModel"]) . "</option>";
+                          }
+                        ?>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="min-select">
+                        <?php
+                          $result = $manager->getAll("SELECT groupAcoustic FROM `acoustic`");
+                          foreach($result as $data) {
+                            echo "<option>" . $data["groupAcoustic"] . "</option>";
+                          }
+                        ?>
+                      </select>
+                    </td>
+                    <td><button id="newplane">enregistrer</button></td>
+                  </tr>
+                </table>
+              </div>
+            </p>
+          </section>
+      <?php } else { ?>
+        <ul class="accordion">
+          <li class="tabs">
+            <div class="prestations landing">
+                <a title="Atterrissage" href="#landing">Atterrissage</a>
+            </div>
+            <div class="paragraph">
+              <h1>Atterrissage</h1>
+              <p>My thoughts in 140 characters or less. Sometimes, I do not know how to correctly use Twitter.</p>
+            </div>
+          </li>
+          <li class="tabs">
+            <div class="prestations reservoir">
+              <a title="Avitaillement" href="#reservoir">Avitaillement</a>
+            </div>
+            <div class="paragraph">
+              <h1>Avitaillement</h1>
+              <p>
+                <select class="min-select">
+                  <?php
+                    $manager = PDOUtils::getSharedInstance();
+                    $result = $manager->getAll("SELECT product FROM `reservoir`");
+
+                    echo "<option>Produits</option>";
+                    foreach($result as $data) {
+                      echo "<option>" . $data["product"] . "</option>";
+                    }
+                  ?>
+                </select>
+
+                <input type="text" placeholder="Quantité désirée en litre" style="width: 160px;">
+                <button class="send" data-prestation="reservoir" data-href="<?php echo $router->rewriteUrl("prestation", "avitaillement"); ?>">Valider</button>
+              </p>
+            </div>
+          </li>
+          <li class="tabs">
+            <div class="prestations area">
+               <a title="Stationnement" href="#area">Stationnement</a>
+            </div>
+            <div class="paragraph">
+              <h1>Stationnement</h1>
+              <p>
+                <select class="min-select">
+                  <option value="defaut">Zone de stationnement</option>
+                  <optgroup label="Intérieur">
+                    <?php
+                      $result = $manager->getAll("
+                        SELECT DISTINCT timetable
+                        FROM `category`
+                      ");
+
+                      foreach($result as $data) {
+                        echo "<option value=\"interieur\">" . utf8_encode($data["timetable"]) . "</option>";
+                      }
+                    ?>
+                  </optgroup>
+                  <optgroup label="Extérieur">
+                    <option value="exterieur">Tarif basic</option>
+                  </optgroup>
+                </select>
+
+                <input type="text" placeholder="Date fin de la prestation" style="width: 160px;">
+                <button class="send" data-prestation="stationnement" data-href="<?php echo $router->rewriteUrl("prestation", "stationnement"); ?>">Valider</button>
+              </p>
+            </div>
+          </li>
+          <li class="tabs">
+            <div class="prestations cleaning">
+              <a title="Nettoyage" href="#cleaning">Nettoyage</a>
+            </div>
+            <div class="paragraph">
+              <h1>Nettoyage</h1>
+
               <?php
-                /* $data = $manager->getAll("SELECT idAcoustic, groupAcoustic FROM `acoustic`");
-                echo "<option value=\"default\">Groupe acoustique</option>";
-                foreach($data as $value) {
-                  echo "<option value=\"idAcoustic\" data-id=\"" . $value["idAcoustic"] . "\">" . utf8_encode($value["groupAcoustic"]) . "</option>";
-                } */
-              ?>
-            </select><br>
+                $result = $manager->getAll("
+                  SELECT costCleaning, tvaCleaning
+                  FROM `cleaning`
+                ");
 
-            <div class="row">
-              <input name="form" id="date" type="text" placeholder="24-06-2017_13:14">
-              <label for="date">Date</label>
-            </div><br><br> -->
-
-            <?php
-              $data = $manager->getAll("SELECT idReceipt FROM `receipt` LEFT JOIN `user` ON receipt.idUser = user.idUser WHERE user.email = ? AND receipt.prestation = \"Atterrissage\"", [$_SESSION["email"]]);
-              var_dump($data);
-            ?>
-          </div>
-          <div class="prestation" id="reservoir" style="display: none;">
-            <select>
-              <?php
-                $data = $manager->getAll("SELECT idReservoir, product FROM `reservoir`");
-                echo "<option value=\"default\">Produit prétrolier</option>";
-                foreach($data as $value) {
-                  echo "<option value=\"idReservoir\" data-id=\"" . $value["idReservoir"] . "\">" . utf8_encode($value["product"]) . "</option>";
+                if(!empty($result)) {
+                  echo "<p>" . ($result[0]["costCleaning"] + $result[0]["tvaCleaning"]) . "€ par surface d'avion dont " . $result[0]["tvaCleaning"] . "€ de TVA.</p>";
                 }
               ?>
-            </select><br>
-
-            <div class="row">
-              <input name="form" id="volume" type="text" placeholder="1200 (litres)">
-              <label for="volume">Volume</label>
-            </div><br><br>
-          </div>
-
-          <button style="display: none;">
-            <div class="icon">
-              <i class="fa fa-trash-o"></i>
-              <i class="fa fa-question"></i>
-              <i class="fa fa-check"></i>
+              <button class="send" data-prestation="nettoyage" data-href="<?php echo $router->rewriteUrl("prestation", "nettoyage"); ?>">Valider</button>
             </div>
-            <div class="text">
-              <span>Valider</span>
-            </div>
-          </button>
-        </p>
-      </center>
-    </article>
+          </li>
+        </ul>
+      <?php } ?>
+    </div>
 
+    <script type="text/javascript" src="libs/moment/moment.js"></script>
+    <script type="text/javascript" src="controllers/MomentUtils.js"></script>
     <script type="text/javascript" src="controllers/oXHR.js"></script>
+    <script type="text/javascript" src="controllers/Request.js"></script>
     <script type="text/javascript" src="app.popup.js"></script>
-    <script type="text/javascript" src="escale.js"></script>
-    <script type="text/javascript">
-      let button = document.querySelector("button");
-      let span = document.querySelector("button .text span");
-
-      button.addEventListener("click", (e) => {
-        if(e.target.classList.contains("confirm")) {
-          e.target.className += " done";
-          span.textContent = "Validé";
-
-          // debug
-          getValues();
-          // debug
-        } else {
-          e.target.className += " confirm";
-          span.textContent = "Êtes-vous sûr ?";
-        }
-      });
-
-      // reset
-      button.addEventListener("mouseout", (e) => {
-        if(e.target.classList.contains("confirm") || e.target.classList.contains("done")) {
-          setTimeout(() => {
-            e.target.classList.remove("confirm");
-            e.target.classList.remove("done");
-            span.textContent = "Valider";
-          }, 3000);
-        }
-      });
-    </script>
+    <script type="text/javascript" src="scenario.js"></script>
+    <?php if(isset($_SESSION["prestation"])) { ?>
+      <script type="text/javascript">
+        popup.manager.open("Cette prestation a été ajoutée à votre panier (pour un total de " + <?php echo ($_SESSION["prestation"]["cost"] + $_SESSION["prestation"]["tva"]); ?> + "€ dont " + <?php echo $_SESSION["prestation"]["tva"]; ?> + "€ de TVA).");
+      </script>
+    <?php
+        unset($_SESSION["prestation"]);
+      }
+    ?>
   </body>
 </html>

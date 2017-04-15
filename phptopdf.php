@@ -4,7 +4,7 @@
 
   class PDF extends FPDF {
     // Tableau simple
-    function BasicTable($header, $data) {
+    function BasicTable($header, $data, $footer) {
       // En-tête
       $this->SetFillColor(34, 34, 34);
       $this->SetTextColor(255);
@@ -12,26 +12,46 @@
 
       foreach($header as $key => $col) {
         if($key == 1) {
-          $this->Cell(80, 7, $col, 1, 0, "C", true);
+          $this->Cell(103, 7, $col, 1, 0, "C", true);
         } else {
-          $this->Cell(28, 7, $col, 1, 0, "C", true);
+          $this->Cell(22, 7, $col, 1, 0, "C", true);
         }
       }
+
       $this->Ln();
 
       // Données
-      $this->SetFillColor(224,235,255);
+      $this->SetFillColor(224, 235, 255);
       $this->SetTextColor(0);
 
-      foreach($data as $key => $row)
-      {
-        if($key == 1) {
-          $this->Cell(80, 6, $row, 1, 0, "C", false);
-        } else {
-          $this->Cell(28, 6, $row, 1, 0, "C", false);
+      foreach($data as $line) {
+        foreach($line as $key => $row) {
+          if($key == 1) {
+            $_length = ceil(strlen($row) / 66);
+            $this->Cell(103, 6 * ($_length), $row, 1, 0, "C", false);
+            // $this->MultiCell(103, 6, $row, 1, "C", false);
+          } else {
+            $this->Cell(22, 6, $row, 1, 0, "C", false);
+            // $this->MultiCell(22, 6, $row, 1, "C", false);
+          }
         }
+
+        $this->Ln();
       }
-      $this->Ln();
+
+      // Prix total
+      $this->SetFillColor(34, 34, 34);
+      $this->SetTextColor(255);
+      $this->SetDrawColor(78, 124, 173);
+
+      $this->Cell(75, 6, "Total", 0, 0, "C", false);
+      $this->Cell(50, 6, "Total", 1, 0, "C", true);
+
+      $this->SetTextColor(78, 124, 173);
+
+      $this->Cell(22, 6, $footer[0], 1, 0, "C", false);
+      $this->Cell(22, 6, $footer[1], 1, 0, "C", false);
+      $this->Cell(22, 6, $footer[2], 1, 0, "C", false);
     }
 
     function removeAccents($str) {
@@ -44,7 +64,16 @@
 
   if(isset($_GET["id"])) {
     $manager = PDOUtils::getSharedInstance();
-    $data = $manager->getAll("SELECT prestation, explication, dateOfDay, costReceipt, tvaReceipt FROM user LEFT JOIN receipt ON user.idUser = receipt.idUser WHERE user.email = ? AND receipt.idReceipt = ? ORDER BY dateOfDay DESC", [$_SESSION["email"], $_GET["id"]]);
+    $data = $manager->getAll("
+      SELECT receipt.creation, receipt.totalCost, receipt.totalTva, service.idService, service.description, service.subscription, service.dateStart, service.dateEnd, service.costService, service.tvaService
+      FROM `service`
+        LEFT JOIN `receipt` ON receipt.idReceipt = service.idReceipt
+      WHERE receipt.idReceipt = ?
+        AND receipt.idUser =
+          (SELECT idUser
+          FROM `user`
+          WHERE email = ?)
+    ", [$_GET["id"], $_SESSION["email"]]);
 
     if(empty($data)) {
       header("Location: index.php");
@@ -61,13 +90,18 @@
       $pdf->Cell(180, 0, chr(201) . "cole de pilotage avion / ulm - Vol decouverte et initiation", 0, 1, "R");
 
       $pdf->SetFont("Arial", "B", "20");
-      $pdf->Cell(0, 100, "Facture du " . date("d-m-Y", $data[0]["dateOfDay"]) . " " . chr(224) . " " . date("h:i:s", $data[0]["dateOfDay"]), 0, 1, "C");
+      $pdf->Cell(0, 100, "Facture du " . date("d/m/Y", $data[0]["creation"]) . " " . chr(224) . " " . date("H:i:s", $data[0]["creation"]), 0, 1, "C");
       $pdf->SetFont("Arial", "", "10");
 
-      $header = ["Prestation", "D" . chr(233) . "tails", "Hors taxe", "TVA", "TTC"];
-      $values = [$pdf->removeAccents($data[0]["prestation"]), $pdf->removeAccents($data[0]["explication"]), round($data[0]["costReceipt"], 2) . chr(128), round($data[0]["tvaReceipt"], 2) . chr(128), round(floatval($data[0]["costReceipt"]) + floatval($data[0]["tvaReceipt"]), 2) . chr(128)];
+      $header = ["Ref.", "D" . chr(233) . "tails", "HT", "TVA", "TTC"];
+      $values = [];
+
+      foreach($data as $value) {
+        $values[] = [$value["idService"], ucfirst($pdf->removeAccents($value["description"])), number_format($value["costService"], 2, ",", " ") . chr(128), number_format($value["tvaService"], 2, ",", " ") . chr(128), number_format(floatval($value["costService"]) + floatval($value["tvaService"]), 2, ",", " ") . chr(128)];
+      }
+
       $pdf->SetFont("Arial", "", 10);
-      $pdf->BasicTable($header, $values);
+      $pdf->BasicTable($header, $values, [number_format($data[0]["totalCost"], 2, ",", " ") . chr(128), number_format($data[0]["totalTva"], 2, ",", " ") . chr(128), number_format($data[0]["totalCost"] + $data[0]["totalTva"], 2, ",", " ") . chr(128)]);
 
       $pdf->Output();
     }

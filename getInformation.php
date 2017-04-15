@@ -1,7 +1,7 @@
 <?php
   require_once("init.php");
 
-  if(isset($_POST["timetable"], $_POST["model"])) {
+  /if(isset($_POST["timetable"], $_POST["model"])) {
     $manager = PDOUtils::getSharedInstance();
     $result = $manager->getAll("SELECT timetable, costLanding, tvaLanding, package FROM `landing` LEFT JOIN `model` ON landing.idModel = model.idModel WHERE model.typeModel = ?", [utf8_decode($_POST["model"])]);
 
@@ -22,33 +22,58 @@
         echo "#";
       }
     }
-  } else if(isset($_POST["get"])) {
+  } else if(isset($_POST["get"], $_POST["type"])) {
     if($_POST["get"] === "forfait" && isset($_POST["date"])) {
       $manager = PDOUtils::getSharedInstance();
       $isUsed = $manager->getAll("
-        SELECT service.idService FROM `basket` LEFT JOIN `service` ON basket.idService = service.idService
-        WHERE service.prestation = \"Atterrissage\"
-          AND service.usage - 5 * 60 <= ?
+        SELECT service.idService   
+        FROM `basket` 
+          LEFT JOIN `service` ON basket.idService = service.idService
+        WHERE service.prestation = ?
+          AND service.usage - 5 * 60 <= ? # compris dans l'interval à 5 minutes près
           AND service.usage + 5 * 60 >= ?
-          AND
-            (SELECT receipt.idReceipt FROM `receipt` LEFT JOIN `user` ON receipt.idUser = user.idUser
-            WHERE user.email <> ?)
-      ", [$_POST["date"], $_POST["date"], $_SESSION["email"]]);
+          AND (SELECT receipt.idReceipt 
+              FROM `receipt` 
+                LEFT JOIN `user` ON receipt.idUser = user.idUser
+              WHERE user.email <> ?)
+      ", [$_POST["type"], $_POST["date"], $_POST["date"], $_SESSION["email"]]);
 
       if(empty($isUsed)) {
         $isAvailable = $manager->getAll("
-          SELECT idReceipt FROM `basket` LEFT JOIN `service` ON basket.idService = service.idService
+          SELECT idReceipt, service.idService, service.usage, service.dateStart 
+          FROM `basket` 
+            LEFT JOIN `service` ON basket.idService = service.idService
           WHERE service.dateStart <= ?
             AND service.dateEnd >= ?
             AND service.remainingLicences <> 0
-            AND
-              (SELECT receipt.idReceipt FROM `receipt` LEFT JOIN `user` ON receipt.idUser = user.idUser
-              WHERE user.email = ?)
-        ", [$_POST["date"], $_POST["date"], $_SESSION["email"]]);
+            AND service.prestation = ?
+            AND (SELECT receipt.idReceipt 
+                FROM `receipt` 
+                  LEFT JOIN `user` ON receipt.idUser = user.idUser
+                WHERE user.email = ?)
+        ", [$_POST["date"], $_POST["date"], $_POST["type"], $_SESSION["email"]]);
 
         if(empty($isAvailable)) {
           echo "no-forfait";
         } else {
+          $isUsed = $manager->getAll("
+            SELECT idService, prestation, service.usage, dateStart, dateEnd, remainingLicences  
+            FROM `service` 
+            WHERE dateStart = ?
+            ORDER BY idService DESC
+          ", [$isAvailable[0]["dateStart"]]); # on récupère les informations du dernier service
+
+          if(!empty($isUsed)) {
+            if($isUsed[0]["remainingLicences"] > 1) {
+              $manager->exec("
+                INSERT INTO `service`(prestation, service.usage, dateStart, dateEnd, remainingLicences)
+                VALUES(?, ?, ?, ?, ?)
+                WHERE service.usage - 5 * 60 > ?
+                  OR service.usage + 5 * 60 < ?
+              ", [$isUsed[0]["prestation"], $_POST["date"], $isUsed[0]["dateStart"], $isUsed[0]["dateEnd"], (int)$isUsed[0]["remainingLicences"] - 1, $_POST["date"], $_POST["date"]]);
+            }
+          }
+
           echo "forfait";
         }
       } else {
@@ -105,15 +130,15 @@
                 $date = new DateTime();
                 $date->setTimestamp($data["prestation"]);
                 $date->add(new DateInterval("P1M")); // on ajoute un mois
-                $idService = $manager->exec("INSERT INTO `service`(prestation, dateStart, dateEnd, usage, remainingLicences) VALUES(\"Atterrissage\", ?, ?, ?, ~0 >> 33)", [$data["prestation"], $date->getTimestamp(), $data["prestation"]], true);
+                $idService = $manager->exec("INSERT INTO `service`(prestation, dateStart, dateEnd, service.usage, remainingLicences) VALUES(\"Atterrissage\", ?, ?, ?, ~0 >> 33)", [$data["prestation"], $date->getTimestamp(), $data["prestation"]], true);
 
                 $description = "Abonnement mensuel";
               } else if($data["service"] === "Unité") {
-                $idService = $manager->exec("INSERT INTO `service`(prestation, dateStart, dateEnd, usage, remainingLicences) VALUES(\"Atterrissage\", ?, ?, ?, ?)", [$data["prestation"], $data["prestation"], $data["duration"], $data["prestation"]], true);
+                $idService = $manager->exec("INSERT INTO `service`(prestation, dateStart, dateEnd, service.usage, remainingLicences) VALUES(\"Atterrissage\", ?, ?, ?, ?)", [$data["prestation"], $data["prestation"], $data["duration"], $data["prestation"]], true);
 
                 $description = "Abonnement à l'unité pour " . $data["duration"] . " jours";
               } else {
-                $idService = $manager->exec("INSERT INTO `service`(prestation, dateStart, dateEnd, usage, remainingLicences) VALUES(\"Atterrissage\", ?, ?, 1)", [$data["prestation"], $data["prestation"], $data["prestation"]], true);
+                $idService = $manager->exec("INSERT INTO `service`(prestation, dateStart, dateEnd, service.usage, remainingLicences) VALUES(\"Atterrissage\", ?, ?, 1)", [$data["prestation"], $data["prestation"], $data["prestation"]], true);
 
                 $description = "Forfait " . strtolower($data["service"]);
               }
@@ -150,13 +175,31 @@
         }
       } else if($_POST["domain"] === "update") {
         $manager = PDOUtils::getSharedInstance();
-        $result = $manager->getAll("
-          SELECT service.idService FROM `basket` LEFT JOIN `service` ON basket.idService = service.idService
+        $service = $manager->getAll("
+          SELECT service.usage
+          FROM `basket`
+            LEFT JOIN `service` ON basket.idService = service.idService
           WHERE service.usage <> service.lastUsage
-          AND
-            (SELECT receipt.idReceipt FROM `receipt` LEFT JOIN `user` ON receipt.idUser = user.idUser
-            WHERE user.email = ?) = basket.idReceipt;
+            AND (SELECT receipt.idReceipt
+                FROM `receipt`
+                  LEFT JOIN `user` ON receipt.idUser = user.idUser
+                WHERE user.email = ?) = basket.idReceipt
         ", [$_SESSION["email"]]);
+
+        if(!empty($service)) {
+          if($service[0]["usage"] - 48 * 3600 <= $data["date"]) { // si c'est compris entre 48h
+            if($service[0]["usage"] - 24 * 3600 >= $data["date"]) { // et 24h, alors on met à jour le service
+              $manager->exec("UPDATE `service` SET lastUsage = ? WHERE idService = ?", [$data["prestation"], $service[0]["usage"]]);
+              echo "ok";
+            } else {
+              echo "too_late";
+            }
+          } else {
+            echo "too_early";
+          }
+        } else {
+          echo "undefined";
+        }
 
         exit(666);
       }

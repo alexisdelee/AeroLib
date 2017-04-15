@@ -89,27 +89,12 @@
       </article>
     <?php } ?>
 
-    <!-- <script type="text/javascript" src="libs/moment.js"></script>
-    <script type="text/javascript" src="libs/moment-ferie-fr.js"></script> -->
-
     <?php if(!$router->state){ ?>
       <script type="text/javascript" src="controllers/oXHR.js"></script>
-      <script type="text/javascript" src="app.popup.js"></script>
+      <script type="text/javascript" src="controllers/Request.js"></script>
       <script type="text/javascript" src="controllers/AutotabMagic.js"></script>
+      <script type="text/javascript" src="app.popup.js"></script>
       <script type="text/javascript">
-        /* Jours fériés
-        let zday = 1483279800;
-        for(let day of moment().getFerieList(2017)){
-          let input = day.date._d.toString();
-          input = (moment(input).unix());
-
-          if(zday >= input && zday < input + 24 * 3600){
-            console.log("on", zday, input);
-          } else {
-            console.log("off", zday, input);
-          }
-        } */
-
         let count = 0;
         document.querySelector("#d").addEventListener("click", (e) => {
           if(++count % 2 == 0) {
@@ -132,70 +117,55 @@
 
         let register = new Autotab();
         register.listen(document.querySelector("#inscription .code_input"), 1, (keys, els) => {
-          let request = new XMLHttpRequest();
-          request.onreadystatechange = function(){
-            if(request.readyState == 4 && request.status == 200){
-              if(request.responseText != "true"){
-                let errors = request.responseText.split(":");
-                let ul = document.createElement("ul");
+          let request = new Request();
+          request.post("subscribe.php",
+            "name=" + document.querySelector("#inscription #name").value +
+            "&age=" + document.querySelector("#inscription #age").value +
+            "&email=" + document.querySelector("#inscription #email").value +
+            "&password=" + keys, (response) => {
+              if(response !== "true") {
+                let errors = response.split(":");
 
-                ul.innerHTML = "Les erreurs suivantes doivent être corrigées pour pouvoir continuer l'inscription :";
-
+                let box = "<ul>Les erreurs suivantes doivent être corrigées pour pouvoir continuer l'inscription :";
                 for(let error of errors) {
                   if(error != 0) {
-                    let li = document.createElement("li");
-                    li.innerHTML = list_of_errors[error - 1];
-                    ul.appendChild(li);
-
-                    popup.manager.open(ul);
-                    register.clear(els);
+                    box += "<li>" + list_of_errors[error - 1] + "</li>";
                   }
                 }
+
+                box += "</ul>";
+                popup.manager.open(box);
+                register.clear(els);
               } else {
                 location.href = "index.php";
               }
-            }
-          }
-
-          request.open("POST", "subscribe.php");
-          request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-          request.send("name=" + document.querySelector("#inscription #name").value +
-                       "&age=" + document.querySelector("#inscription #age").value +
-                       "&email=" + document.querySelector("#inscription #email").value +
-                       "&password=" + keys);
+            });
         });
 
         let login = new Autotab();
         login.listen(document.querySelector("#connexion .code_input"), 1, (keys, els) => {
-          let request = new XMLHttpRequest();
-          request.onreadystatechange = function(){
-            if(request.readyState == 4 && request.status == 200){
-              if(request.responseText != "true"){
-                let errors = request.responseText.split(":");
-                let ul = document.createElement("ul");
+          let request = new Request();
 
-                ul.innerHTML = "Les erreurs suivantes doivent être corrigées pour pouvoir vous connecter :";
+          request.post("login.php",
+            "email=" + document.querySelector("#connexion #email").value +
+            "&password=" + keys, (response) => {
+              if(response !== "true") {
+                let errors = response.split(":");
 
+                let box = "<ul>Les erreurs suivantes doivent être corrigées pour pouvoir vous connecter :";
                 for(let error of errors) {
                   if(error != 0) {
-                    let li = document.createElement("li");
-                    li.innerHTML = list_of_errors[error - 1];
-                    ul.appendChild(li);
-
-                    popup.manager.open(ul);
-                    login.clear(els);
+                    box += "<li>" + list_of_errors[error - 1] + "</li>";
                   }
                 }
+
+                box += "</ul>";
+                popup.manager.open(box);
+                login.clear(els);
               } else {
                 location.href = "index.php";
               }
-            }
-          }
-
-          request.open("POST", "login.php");
-          request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-          request.send("email=" + document.querySelector("#connexion #email").value +
-                       "&password=" + keys);
+            });
         });
       </script>
     <?php } ?>

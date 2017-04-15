@@ -10,7 +10,7 @@ popup.manager = (function(self){
 		cd_popup.classList.add('is-visible');
 
 		var container = document.getElementById('cd-popup-paragraph');
-		container.innerHTML = msg.innerHTML;
+		container.innerHTML = msg;
 
 		return false;
 	};
