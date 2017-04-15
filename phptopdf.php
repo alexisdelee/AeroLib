@@ -4,7 +4,7 @@
 
   class PDF extends FPDF {
     // Tableau simple
-    function BasicTable($header, $data, $footer) {
+    function BasicTable($header, $data, $footer, $penality) {
       // En-tête
       $this->SetFillColor(34, 34, 34);
       $this->SetTextColor(255);
@@ -29,12 +29,28 @@
           if($key == 1) {
             $_length = ceil(strlen($row) / 66);
             $this->Cell(103, 6 * ($_length), $row, 1, 0, "C", false);
-            // $this->MultiCell(103, 6, $row, 1, "C", false);
           } else {
             $this->Cell(22, 6, $row, 1, 0, "C", false);
-            // $this->MultiCell(22, 6, $row, 1, "C", false);
           }
         }
+
+        $this->Ln();
+      }
+
+      // Pénalité
+      if($penality[0]["costAdministrative"] != null) {
+        $this->SetFillColor(34, 34, 34);
+        $this->SetTextColor(255);
+        $this->SetDrawColor(78, 124, 173);
+
+        $this->Cell(75, 6, "", 0, 0, "C", false);
+        $this->Cell(50, 6, "P" . chr(233) . "nalit" . chr(233), 1, 0, "C", true);
+
+        $this->SetTextColor(166, 24, 53);
+
+        $this->Cell(22, 6, number_format($penality[0]["costAdministrative"], 2, ",", " ") . chr(128), 1, 0, "C", false);
+        $this->Cell(22, 6, number_format($penality[0]["tvaAdministrative"], 2, ",", " ") . chr(128), 1, 0, "C", false);
+        $this->Cell(22, 6, number_format($penality[0]["costAdministrative"] + $penality[0]["tvaAdministrative"], 2, ",", " ") . chr(128), 1, 0, "C", false);
 
         $this->Ln();
       }
@@ -44,7 +60,7 @@
       $this->SetTextColor(255);
       $this->SetDrawColor(78, 124, 173);
 
-      $this->Cell(75, 6, "Total", 0, 0, "C", false);
+      $this->Cell(75, 6, "", 0, 0, "C", false);
       $this->Cell(50, 6, "Total", 1, 0, "C", true);
 
       $this->SetTextColor(78, 124, 173);
@@ -100,8 +116,16 @@
         $values[] = [$value["idService"], ucfirst($pdf->removeAccents($value["description"])), number_format($value["costService"], 2, ",", " ") . chr(128), number_format($value["tvaService"], 2, ",", " ") . chr(128), number_format(floatval($value["costService"]) + floatval($value["tvaService"]), 2, ",", " ") . chr(128)];
       }
 
+      // pénalité
+      $penality = $manager->getAll("
+        SELECT administrative.costAdministrative, administrative.tvaAdministrative
+        FROM `receipt`
+          LEFT JOIN `administrative` ON receipt.idAdministrative = administrative.idAdministrative
+        WHERE receipt.idReceipt = ?
+      ", [$_GET["id"]]);
+
       $pdf->SetFont("Arial", "", 10);
-      $pdf->BasicTable($header, $values, [number_format($data[0]["totalCost"], 2, ",", " ") . chr(128), number_format($data[0]["totalTva"], 2, ",", " ") . chr(128), number_format($data[0]["totalCost"] + $data[0]["totalTva"], 2, ",", " ") . chr(128)]);
+      $pdf->BasicTable($header, $values, [number_format($data[0]["totalCost"], 2, ",", " ") . chr(128), number_format($data[0]["totalTva"], 2, ",", " ") . chr(128), number_format($data[0]["totalCost"] + $data[0]["totalTva"], 2, ",", " ") . chr(128)], $penality);
 
       $pdf->Output();
     }

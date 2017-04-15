@@ -27,7 +27,7 @@
         <?php
           $manager = PDOUtils::getSharedInstance();
           $data = $manager->getAll("
-            SELECT receipt.idReceipt, receipt.creation, receipt.totalCost, receipt.totalTva, receipt.isPaid
+            SELECT receipt.idReceipt, receipt.creation, receipt.totalCost, receipt.totalTva, receipt.isPaid, receipt.idAdministrative
             FROM `user` 
               LEFT JOIN `receipt` ON user.idUser = receipt.idUser 
             WHERE user.email = ? 
@@ -42,7 +42,8 @@
 
             foreach($data as $value) {
               echo "<strong>[" . date("d/m/Y H:i:s", $value["creation"]) . "]</strong> : " . 
-                ($value["isPaid"] == 1 ? number_format(floatval($value["totalCost"]) + floatval($value["totalTva"]), 2, ",", " ") . " euro(s)" : "(<a onclick=\"payNow(" . $value["idReceipt"] . "); return false;\" style=\"color: #000;\" href=\"#\">paiement immédiat</a>)") . 
+                ($value["isPaid"] == 1 ? number_format(floatval($value["totalCost"]) + floatval($value["totalTva"]), 2, ",", " ") . " euro(s)"  : "(<a onclick=\"payNow(" . $value["idReceipt"] . "); return false;\" style=\"color: #000;\" href=\"#\">paiement immédiat</a>)") . 
+                ($value["idAdministrative"] != null ? "<small style=\"color: #A61835;\"> + PENALITÉ de retard de paiement</small>" : "") .
               " <a target=\"_blank\" data-id=\"" . $value["idReceipt"] . "\" href=\"phptopdf.php?id=" . $value["idReceipt"] . "\" title=\"Facture au format PDF\">format PDF</a><br>";
             }
 
@@ -67,7 +68,7 @@
           $manager = PDOUtils::getSharedInstance();
           $data = $manager->getAll("SELECT credit FROM `user` WHERE accesstoken = ?", [$_SESSION["accesstoken"]]);
 
-          echo "<p>Crédit sur votre compte : " . $data[0]["credit"] . "€</p>";
+          echo "<p>Crédit sur votre compte : " . number_format($data[0]["credit"], 2, ",", " ") . "€</p>";
         ?>
         <input type="text" id="credit">
       </center>
