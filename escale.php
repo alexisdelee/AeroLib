@@ -25,7 +25,7 @@
   </head>
   <body>
     <div class="container">
-      <?php if(isset($_GET["prestation"], $_GET["matricule"], $_GET["data"])) { ?>
+      <?php if(isset($_GET["prestation"], $_GET["matricule"])) { ?>
         <section style="position: relative; top: -100px;">
           <p>
             <center>
@@ -45,7 +45,7 @@
             </p>
           </center>
         </article>
-      <?php } else if(isset($_GET["prestation"], $_GET["data"])) { ?>
+      <?php } else if(isset($_GET["prestation"])) { ?>
         <section id="plane" style="position: relative; top: -100px;">
             <p>
               Choix d'un avion :<br>
@@ -176,7 +176,7 @@
                   </optgroup>
                 </select>
 
-                <input type="text" placeholder="Date fin de la prestation" style="width: 160px;">
+                <input type="text" placeholder="Durée du stationnement" style="width: 160px;">
                 <button class="send" data-prestation="stationnement" data-href="<?php echo $router->rewriteUrl("prestation", "stationnement"); ?>">Valider</button>
               </p>
             </div>

@@ -93,7 +93,6 @@ for(let prestation of prestations) {
     }
 
     e.target.parentNode.parentNode.classList.add("open");
-    // window.location.href = e.target.href;
   });
 }
 
@@ -101,62 +100,43 @@ let send = document.querySelectorAll(".send");
 if(send != null) {
   for(let button of send) {
     button.addEventListener("click", (e) => {
+      let data = "";
+
       if(e.target.dataset.prestation === "reservoir") {
         let container = document.querySelector(".reservoir").parentNode;
-        
-        var data = JSON.stringify({
-          product: encodeURIComponent(container.querySelector("select").selectedOptions[0].innerHTML),
-          quantite: isNaN(parseInt(container.querySelector("input").value)) ? 0 : container.querySelector("input").value
-        });
+
+        data = "&product=" + encodeURIComponent(container.querySelector("select").selectedOptions[0].innerHTML);
+        data += "&quantite=" + (isNaN(parseInt(container.querySelector("input").value)) ? 0 : container.querySelector("input").value);
       } else if(e.target.dataset.prestation === "nettoyage") {
-        var data = "{}";
+        data = "";
       } else if(e.target.dataset.prestation === "stationnement") {
         let container = document.querySelector(".area").parentNode;
         let manager = new MomentUtils();
 
-        var data = JSON.stringify({
-          zone: encodeURIComponent(container.querySelector("select").selectedOptions[0].value),
-          tarif: encodeURIComponent(container.querySelector("select").selectedOptions[0].innerHTML),
-          end: manager.timestamp(moment(container.querySelector("input").value, "DD/MM/YYYY HH:mm")._d)
-        });
+        data = "&zone=" + encodeURIComponent(container.querySelector("select").selectedOptions[0].value);
+        data += "&timetable=" + encodeURIComponent(container.querySelector("select").selectedOptions[0].innerHTML);
+        data += "&duration=" + container.querySelector("input").value;
       }
 
-      /* console.log(e.target.dataset.href + "&data=" + data);
-      return; */
-      window.location.href = e.target.dataset.href + "&data=" + data;
+      window.location.href = e.target.dataset.href + data;
     });
   }
-}
-
-function getQueryVariable(_param) { // pour récupérer les paramètres passer dans l'url
-  let url = window.location.href;
-
-  _param = _param.replace(/[\[\]]/g, "\\$&");
-  let regex = new RegExp("[?&]" + _param + "(=([^&#]*)|&|#|$)"),
-      results = regex.exec(url);
-
-  if(!results) return null;
-  else if(!results[2]) return "";
-  else return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
 let valid = document.querySelector("#accept");
 if(valid !== null) {
   valid.addEventListener("click", () => {
     let manager = new MomentUtils();
-    let data = {
-      prestation: getQueryVariable("prestation"),
-      matricule: getQueryVariable("matricule"),
-      date: manager.timestamp(moment(document.querySelector("#date").value, "DD/MM/YYYY HH:mm")._d),
-      options: JSON.parse(getQueryVariable("data"))
-    };
+    let data = decodeURIComponent(window.location.search.substring(1));
+    data += "&action=" + manager.timestamp(moment(document.querySelector("#date").value, "DD/MM/YYYY HH:mm")._d);
 
     let request = new Request();
-    request.post("prestationsAerodrome.php", "data=" + JSON.stringify(data), (response) => {
-      if(response === "ok") {
+    request.post("prestations.php", data, (response) => {
+      response = JSON.parse(response);
+      if(response.status == 200) {
         window.location.href = "escale.php";
       } else {
-        popup.manager.open("<span style=\"color: #A61835\">" + response + "</span>");
+        popup.manager.open("<span style=\"color: #A61835\">" + decodeURIComponent(response.message) + "</span>");
       }
     });
   });
