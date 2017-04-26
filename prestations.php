@@ -33,11 +33,9 @@
   curl_setopt($init, CURLOPT_RETURNTRANSFER, 1);
 
   $response = json_decode(curl_exec($init), true);
-  $response["message"] = $response["message"];
-
   $code = curl_getinfo($init)["http_code"];
 
-  if($code == 200) {
+  if($code == 200 && $response["options"]["id_plane"] != -1) {
     $manager = PDOUtils::getSharedInstance();
 
     $manager->exec("

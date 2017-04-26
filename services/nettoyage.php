@@ -24,6 +24,10 @@
       _response_code(409, "Valeurs saisies incorrectes", $res);
     }
 
+    if(!isBooked($_POST["action"], $_POST["email"], $_POST["matricule"])) { // le client n'est pas présent durant cette période
+      _response_code(403, "Vous n'avez pas été enregistré à cette date (commencez par vous inscrire pour un atterrissage et un stationnement)", $res);
+    }
+
     $fullday_action = wholeDay($_POST["action"]);
     $fullday_now = wholeDay($res["subscription"]);
 
@@ -80,5 +84,27 @@
 
     echo json_encode($ressource);
     exit($error);
+  }
+
+  function isBooked($action, $email, $matricule) {
+    $manager = PDOUtils::getSharedInstance();
+    $book = $manager->getAll("
+      SELECT idService FROM `service`
+      WHERE description = \"atterrissage\"
+        AND dateStart <= ?
+        AND dateEnd >= ?
+        AND idPlane =
+          (SELECT @id := plane.idPlane FROM `plane`
+            LEFT JOIN `user` ON plane.idUser = user.idUser
+          WHERE user.email = ?
+            AND plane.matricule = ?)
+        AND confirmation = 1
+    ", [$action, $action, $email, $matricule]);
+
+    if(empty($book)) {
+      return false;
+    } else {
+      return true;
+    }
   }
 ?>

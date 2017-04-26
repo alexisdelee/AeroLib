@@ -4,7 +4,8 @@
 }
 
 body {
-  background-color: #FFF;
+  background-color: #181818;
+  overflow: hidden;
 }
 
 #overlay {
@@ -19,19 +20,18 @@ body {
 }
 
 section.calendar {
-  background-color: #29323f;
+  /* background-color: #29323f; */
   font-family: 'Dosis', sans-serif;
   color: #fff;
-  width: 320px;
-  height: 435px;
+  width: 290px;
+  height: 100%;
   padding: 45px;
   position: absolute;
-  top: 25%;
-  left: 0;
+  top: 250px;
 }
 section.calendar h1 {
   text-align: center;
-  color: #4e7cad;
+  color: #61b2a7;
   margin: 0 0 30px 0;
 }
 section.calendar form {
@@ -73,8 +73,8 @@ section.calendar form label.day span {
   height: 25px;
   line-height: 25px;
   margin: -2px 0 0 -2px;
-  border-radius: 50%;
-  border: 2px solid #29323f;
+  border-radius: 3px;
+  border: 2px solid #61b2a7;
   text-align: center;
   -webkit-transition: all .2s linear;
   transition: all .2s linear;
@@ -158,3 +158,156 @@ section.calendar div.clearfix {
 section.calendar div.hidden {
   display: none;
 }
+
+#separator {
+  position: absolute;
+  left: 380px;
+  top: 30px;
+  width: 2px;
+  height: 750px;
+  background: #61b2a7;
+}
+
+aside {
+  background: #242424;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 641px;
+}
+
+/* selection of months */
+@import url(http://fonts.googleapis.com/css?family=Varela+Round);
+
+.icon {
+  display: block;
+  position: relative;
+  width: 1.5em;
+  height: 1.5em;
+  margin: 0 auto;
+}
+
+.icon:before,
+.icon:after {
+  content: "";
+  position: absolute;
+}
+
+.dropp {
+  width: 220px;
+  box-shadow: 0 1px 3px #0a0a0a;
+  position: absolute;
+  top: 120px;
+  left: 80px;
+  z-index: 100;
+  font: 1em "Varela Round", Arial, sans-serif;
+  color: #999;
+}
+
+.dropp-header {
+  background: #242424;
+  color: #fff;
+  border-bottom: 2px solid #4E7CAD;
+  box-align: stretch;
+  align-items: stretch;
+  display: box;
+  display: flex;
+  box-orient: horizontal;
+  box-direction: normal;
+  flex-direction: row;
+  box-pack: start;
+  justify-content: flex-start;
+}
+
+.dropp-header__title {
+  display: block;
+  padding: 1em 0.5em;
+  box-flex: 8;
+  flex: 8;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
+.dropp-header__btn {
+  display: block;
+  background: #1c1c1c;
+  color: #fff;
+  padding: 0.8em 0.5em;
+  box-flex: 1;
+  flex: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+.dropp-header__btn .icon {
+  transform: rotate(-90deg);
+}
+
+.dropp-header__btn .icon:before,
+.dropp-header__btn .icon:after {
+  top: 30%;
+  left: 25%;
+  width: 50%;
+  height: 15%;
+  background: #4E7CAD;
+  transform: rotate(-45deg);
+}
+
+.dropp-header__btn .icon:after {
+  top: 55%;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.dropp-header__btn.js-open { background: #4E7CAD; }
+
+.dropp-header__btn.js-open .icon {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.dropp-header__btn.js-open .icon:before,
+.dropp-header__btn.js-open .icon:after { background: #fff; }
+
+.dropp-header__btn:focus { outline: none; }
+
+.dropp-body {
+  overflow: hidden;
+  width: 100%;
+  max-height: 0;
+  background: #292929;
+  color: #fff;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+
+.dropp-body.js-open { max-height: 35em; }
+
+.dropp-body label {
+  display: block;
+  font-size: 0.875em;
+  color: #fff;
+  text-decoration: none;
+  padding: 1em 0.5em;
+  font-weight: 400;
+  box-shadow: 0 -1px 0 #171717, inset 0 1px 0 #313131;
+  cursor: pointer;
+}
+
+.dropp-body label:first-child { box-shadow: none; }
+
+.dropp-body label:hover,
+.dropp-body label.js-open { background: #4E7CAD; }
+
+.dropp-body label > input { display: none; }

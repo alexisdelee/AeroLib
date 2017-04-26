@@ -2,7 +2,7 @@
   require_once("../platforms/databases/PDOUtils.php");
 
   setLocale(LC_ALL, "fr_FR");
-  header("Content-Type: application/json");
+  header("Content-Type: application/json; charset=utf-8");
 
   $res = [
     "message" => "",
@@ -22,6 +22,10 @@
     if(is_nan($_POST["action"]) || is_nan($_POST["quantite"]) || strlen($_POST["matricule"]) != 8
       || $_POST["action"] < 0 || $_POST["quantite"] <= 0) {
       _response_code(409, "Valeurs saisies incorrectes", $res);
+    }
+
+    if(!isBooked($_POST["action"], $_POST["email"], $_POST["matricule"])) { // le client n'est pas présent durant cette période
+      _response_code(403, "Vous n'avez pas été enregistré à cette date (commencez par vous inscrire pour un atterrissage et un stationnement)", $res);
     }
 
     $fullday_action = wholeDay($_POST["action"]);
@@ -49,13 +53,13 @@
     $prestation = $manager->getAll("
       SELECT idReservoir, costReservoir, tvaReservoir FROM `reservoir`
       WHERE product = ?
-    ", [urldecode($_POST["product"])]); // vérification des produits sélectionnés
+    ", [$_POST["product"]]); // vérification des produits sélectionnés
 
     if(empty($prestation)) {
       _response_code(404, "Impossible de trouver les données en rapport avec votre recherche", $res);
     }
 
-    $res["description"] = $_POST["quantite"] . "L de " . urldecode($_POST["product"]);
+    $res["description"] = $_POST["quantite"] . "L de " . $_POST["product"];
     $res["inscription"] = (int)$_POST["action"];
     $res["options"]["id_plane"] = (int)$plane[0]["idPlane"];
     $res["options"]["cost"] = floatval($_POST["quantite"]) * floatval($prestation[0]["costReservoir"]);
@@ -76,9 +80,31 @@
   function _response_code($error, $message, $ressource) {
     http_response_code($error);
 
-    $ressource["message"] = rawurlencode($message);
+    $ressource["message"] = $message;
 
     echo json_encode($ressource);
     exit($error);
+  }
+
+  function isBooked($action, $email, $matricule) {
+    $manager = PDOUtils::getSharedInstance();
+    $book = $manager->getAll("
+      SELECT idService FROM `service`
+      WHERE description = \"atterrissage\"
+        AND dateStart <= ?
+        AND dateEnd >= ?
+        AND idPlane =
+          (SELECT @id := plane.idPlane FROM `plane`
+            LEFT JOIN `user` ON plane.idUser = user.idUser
+          WHERE user.email = ?
+            AND plane.matricule = ?)
+        AND confirmation = 1
+    ", [$action, $action, $email, $matricule]);
+
+    if(empty($book)) {
+      return false;
+    } else {
+      return true;
+    }
   }
 ?>

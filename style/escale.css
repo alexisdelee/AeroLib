@@ -331,6 +331,19 @@ input {
   padding: 7px 15px;
   border: none;
   cursor: pointer;
+  border-radius: 2px;
+}
+
+#confirm {
+  position: absolute;
+  right: 100px;
+  bottom: 15px;
+  background: #61b2a7;
+  color: #FFF;
+  padding: 7px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
 }
 
 #accept {

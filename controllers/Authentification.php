@@ -8,10 +8,6 @@
       $numargs = func_num_args();
       $arg_list = func_get_args();
 
-
-      /* $arg_list = array_map(function($arg) {
-        return hash("crc32", strval($arg));
-      }, $arg_list); */
       $hash = str_repeat(" ", 8);
 
       if($numargs) {
@@ -19,6 +15,7 @@
           $hash[$i] = $arg_list[0][$i];
           for($arg = 1; $arg < $numargs; $arg++) {
             $hash[$i] = $hash[$i] ^ $arg_list[$arg][$i];
+            $hash[$i] = ~$hash[$i];
           }
         }
 

@@ -1,7 +1,5 @@
 package mysql;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -14,27 +12,30 @@ public class Main {
 		String login = "root";
 		String passwd = "";
 		
-		LogBDD bdd = new LogBDD(url, login, passwd);
-		
-		try {
-			ResultSet rs = bdd.execute("SELECT * FROM user");
+		// if(args.length == 1 && Long.valueOf(args[0]).longValue() > 0) {
+			PDOUtils bdd = new PDOUtils(url, login, passwd);
 			
-			PrintWriter writer = new PrintWriter("test.txt", "utf-8");
-			while(rs.next()) {
-				System.out.println(rs.getString("email"));
-				writer.println(rs.getString("email"));
-			}
-			writer.close();
-		} catch(SQLException e) {
-			e.printStackTrace();
-		} catch(IOException e) {
-			e.printStackTrace();
-		} finally {
-			bdd.close_();
-		}
-		
-		DateParse date = new DateParse();
-		System.out.println(date.timestamp("03-01-2016"));
-		System.out.println(date.date("1456786800"));
+			try {
+				ResultSet rs = bdd.execute("SELECT * FROM user");
+				
+				while(rs.next()) {
+					System.out.println(rs.getString("email"));
+				}
+				
+				DateParse date = new DateParse();
+				System.out.println(date.timestamp("03-01-2016"));
+				System.out.println(date.date("1451775600"));
+				
+				Excel xls = new Excel();
+				xls.create("C:/Users/Alexis/Documents/ESGI/2016-2017/JAVA/mysql/facture-" + xls.uniqid() + ".xls", "Facture");
+				// xls.create("C:/Users/Alexis/Documents/ESGI/2016-2017/JAVA/mysql/facture-" + args[0] + ".xls", "Facture");
+			} catch(SQLException e) {
+				e.printStackTrace();
+			} finally {
+				bdd.close_();
+			}			
+		// } else {
+			// System.out.println("Error: error parameter");
+		// }
 	}
 }

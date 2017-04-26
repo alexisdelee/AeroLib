@@ -38,7 +38,11 @@
         <article>
           <center>
             <p>
-              A quelle date souhaitez-vous avoir accès à la prestation ? <input id="date" type="text" style="width: 150px;" placeholder="10/04/2017 13:13"><br><br>
+              <?php
+                if(!isset($_GET["type"]) || $_GET["type"] != "confirmation") {
+                  echo "A quelle date souhaitez-vous avoir accès à la prestation ? <input id=\"date\" type=\"text\" style=\"width: 150px;\" placeholder=\"10/04/2017 13:13\"><br><br>";
+                }
+              ?>
 
               <button id="accept">Ajouter au panier</button>
               <button id="cancel" onclick="window.location.href = 'escale.php'">Annuler</button>
@@ -117,13 +121,51 @@
           </section>
       <?php } else { ?>
         <ul class="accordion">
-          <li class="tabs">
+          <li class="tabs open">
             <div class="prestations landing">
-                <a title="Atterrissage" href="#landing">Atterrissage</a>
+               <a title="Atterrissage" href="#area">Atterrissage</a>
             </div>
             <div class="paragraph">
-              <h1>Atterrissage</h1>
-              <p>My thoughts in 140 characters or less. Sometimes, I do not know how to correctly use Twitter.</p>
+              <h1 style="margin-top: -50px;">Atterrissage</h1>
+              <select class="min-select" style="margin-top: -10px;">
+                <option value="defaut">Forfait</option>
+                <?php
+                  $result = $manager->getAll("
+                    SELECT DISTINCT timetable
+                    FROM `landing`
+                  ");
+
+                  foreach($result as $data) {
+                    echo "<option>" . utf8_encode($data["timetable"]) . "</option>";
+                  }
+                ?>
+              </select>
+
+              <h2 style="margin-top: 10px;">Stationnement</h2>
+              <p>
+                <select class="min-select">
+                  <option value="defaut">Zone de stationnement</option>
+                  <optgroup label="Intérieur">
+                    <?php
+                      $result = $manager->getAll("
+                        SELECT DISTINCT timetable
+                        FROM `category`
+                      ");
+
+                      foreach($result as $data) {
+                        echo "<option value=\"interieur\">" . utf8_encode($data["timetable"]) . "</option>";
+                      }
+                    ?>
+                  </optgroup>
+                  <optgroup label="Extérieur">
+                    <option value="exterieur">Tarif basic</option>
+                  </optgroup>
+                </select>
+
+                <input type="text" placeholder="Nombre de jours" style="width: 160px;">
+                <button id="confirm">Confirmer atterrissage</button>
+                <button class="send" data-prestation="atterrissage" data-href="<?php echo $router->rewriteUrl("prestation", "atterrissage"); ?>">Valider</button>
+              </p>
             </div>
           </li>
           <li class="tabs">
@@ -147,37 +189,6 @@
 
                 <input type="text" placeholder="Quantité désirée en litre" style="width: 160px;">
                 <button class="send" data-prestation="reservoir" data-href="<?php echo $router->rewriteUrl("prestation", "avitaillement"); ?>">Valider</button>
-              </p>
-            </div>
-          </li>
-          <li class="tabs">
-            <div class="prestations area">
-               <a title="Stationnement" href="#area">Stationnement</a>
-            </div>
-            <div class="paragraph">
-              <h1>Stationnement</h1>
-              <p>
-                <select class="min-select">
-                  <option value="defaut">Zone de stationnement</option>
-                  <optgroup label="Intérieur">
-                    <?php
-                      $result = $manager->getAll("
-                        SELECT DISTINCT timetable
-                        FROM `category`
-                      ");
-
-                      foreach($result as $data) {
-                        echo "<option value=\"interieur\">" . utf8_encode($data["timetable"]) . "</option>";
-                      }
-                    ?>
-                  </optgroup>
-                  <optgroup label="Extérieur">
-                    <option value="exterieur">Tarif basic</option>
-                  </optgroup>
-                </select>
-
-                <input type="text" placeholder="Durée du stationnement" style="width: 160px;">
-                <button class="send" data-prestation="stationnement" data-href="<?php echo $router->rewriteUrl("prestation", "stationnement"); ?>">Valider</button>
               </p>
             </div>
           </li>

@@ -2,7 +2,7 @@
   require_once("../platforms/databases/PDOUtils.php");
 
   setLocale(LC_ALL, "fr_FR");
-  header("Content-Type: application/json");
+  header("Content-Type: application/json; charset=utf-8");
 
   $res = [
     "message" => "",
@@ -18,9 +18,44 @@
     ]
   ];
 
-  if(isset($_POST["action"], $_POST["duration"], $_POST["matricule"], $_POST["timetable"], $_POST["email"])) {
+  if(isset($_POST["type"], $_POST["email"], $_POST["matricule"]) && $_POST["type"] == "confirmation") {
+    if(strlen($_POST["matricule"]) != 8) {
+      _response_code(409, "Valeurs saisies incorrectes", $res);
+    }
+
+    $manager = PDOUtils::getSharedInstance();
+    $prestation = $manager->getAll("
+      SELECT idService, confirmation FROM `service`
+      WHERE description = \"atterrissage\"
+        AND inscription - 24 * 3600 >= ?
+        AND inscription - 48 * 3600 <= ?
+        AND idPlane =
+          (SELECT plane.idPlane FROM `plane`
+            LEFT JOIN `user` ON plane.idUser = user.idUser
+          WHERE user.email = ?
+            AND plane.matricule = ?)
+      ORDER BY idService DESC
+      LIMIT 1
+    ", [$res["subscription"], $_POST["action"], $_POST["email"], $_POST["matricule"]]);
+
+    if(empty($prestation)) {
+      _response_code(400, "Vous devez confirmer entre 24h et 48h avant la prestation", $res);
+    } else {
+      if((int)$prestation[0]["confirmation"] == 1) {
+        _response_code(409, "Vous avez déjà confirmé votre atterrissage à cette date", $res);
+      } else {
+        $manager->exec("
+          UPDATE `service`
+            SET confirmation = 1
+            WHERE idService = ?
+        ", [$prestation[0]["idService"]]);
+
+        _response_code(200, "Votre confirmation a bien été prise en compte", $res);
+      }
+    }
+  } else if(isset($_POST["action"], $_POST["duration"], $_POST["matricule"], $_POST["timetable"], $_POST["email"])) {
     if(is_nan($_POST["action"]) || is_nan($_POST["duration"]) || strlen($_POST["matricule"]) != 8
-      || $_POST["action"] < 0) {
+      || $_POST["action"] < 0 || $_POST["duration"] <= 0) {
       _response_code(409, "Valeurs saisies incorrectes", $res);
     }
 
@@ -52,14 +87,14 @@
     }
 
     $plane = $manager->getAll("
-      SELECT plane.idPlane, plane.base, plane.idAcoustic FROM `plane`
+      SELECT plane.idPlane, plane.idAcoustic FROM `plane`
         LEFT JOIN `user` ON plane.idUser = user.idUser
       WHERE user.email = ?
         AND plane.matricule = ?
     ", [$_POST["email"], $_POST["matricule"]]); // on récupère des informations sur l'avion sélectionné
 
     if(empty($plane)) {
-      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche", $res);
+      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche (erreur liée à votre matricule)", $res);
     }
 
     $prestation = $manager->getAll("
@@ -67,11 +102,10 @@
         LEFT JOIN `plane` ON landing.idModel = plane.idModel
       WHERE plane.idPlane = ?
         AND landing.timetable = ?
-        AND landing.base = ?
-    ", [$plane[0]["idPlane"], urldecode($_POST["timetable"]), $plane[0]["base"]]);
+    ", [$plane[0]["idPlane"], utf8_decode($_POST["timetable"])]);
 
     if(empty($prestation)) {
-      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche", $res);
+      _response_code(404, "Le forfait choisit ne correspond pas à votre avion", $res);
     }
 
     $minutes = getdate($_POST["action"])["hours"] * 60 + getdate($_POST["action"])["minutes"];
@@ -92,7 +126,7 @@
     }
 
     if($coefficient == -1) {
-      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche", $res);
+      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche (erreur liée groupe acoustique)", $res);
     }
 
     $cost_base = floatval($prestation[0]["costLanding"]) * $coefficient * ceil((int)$_POST["duration"] / (int)$prestation[0]["ratio"]); // cout de base = redevance atterrissage + coefficient groupe acoustique
@@ -115,7 +149,7 @@
     ");
 
     if($signs == -1) {
-      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche", $res);
+      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche (erreur liée à la redevance balisage)", $res);
     }
 
     $cost_base += floatval($signs[0]["costSigns"]); // on ajoute la redevance balisage
@@ -128,6 +162,12 @@
     $res["options"]["start"] = $fullday_action;
     $res["options"]["end"] = $fullday_end + 23 * 3600 + 59 * 60 + 59; // fin de la jourée (23h59'59)
     
+    $manager->exec("
+      UPDATE `plane`
+        SET base = ?
+      WHERE idPlane = ?
+    ", [$prestation[0]["base"], $plane[0]["idPlane"]]); // on met à jour la partie basée ou non de l'avion
+
     _response_code(200, "ok", $res);
   } else {
     _response_code(401, "Autorisation refusée", $res);
@@ -141,7 +181,7 @@
   function _response_code($error, $message, $ressource) {
     http_response_code($error);
 
-    $ressource["message"] = rawurlencode($message);
+    $ressource["message"] = $message;
 
     echo json_encode($ressource);
     exit($error);

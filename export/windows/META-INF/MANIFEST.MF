@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: mysql.Main
 Class-Path: lib/mysql-connector-java-5.1.41-bin.jar
+Class-Path: lib/poi-3.16.jar

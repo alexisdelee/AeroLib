@@ -7,12 +7,11 @@ import java.text.SimpleDateFormat;
 import java.sql.Timestamp;
 
 public class DateParse {
-	
 	public DateParse() {}
 	
 	public long timestamp(String date_) {
 		try {
-			DateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
+			DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 			Date date = (Date)formatter.parse(date_); 
 			
 			return date.getTime() / 1000L;
@@ -23,10 +22,12 @@ public class DateParse {
 		return 0;
 	}
 	
-	public Date date(String timestamp) {
+	public String date(String timestamp) {
 		try {
+			DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
 			Timestamp stamp = new Timestamp(Long.parseLong(timestamp, 10) * 1000);
-			return new Date(stamp.getTime());
+			
+			return formatter.format(new Date(stamp.getTime()));
 		} catch(NumberFormatException e) {
 			e.printStackTrace();
 		}

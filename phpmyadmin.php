@@ -30,10 +30,11 @@
           "model" => "Types avions",
           "outdoorparking" => "Redevances pour stationnement extérieur",
           "plane" => "Gestionnaire des avions",
-          "service" => "Service",
           "receipt" => "Factures",
           "remittance" => "Redevances d'atterrissage pour hélicoptère ou ULM non basés",
           "reservoir" => "Produits pétroliers",
+          "service" => "Service",
+          "signs" => "Redevance balisage",
           "user" => "Utilisateur",
           "weather" => "Météo"
         ];

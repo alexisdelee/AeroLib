@@ -96,6 +96,14 @@ for(let prestation of prestations) {
   });
 }
 
+let confirm = document.querySelector("#confirm");
+if(confirm != null) {
+  confirm.addEventListener("click", (e) => {
+    window.location.href = "escale.php?prestation=atterrissage&type=confirmation";
+  });
+}
+
+
 let send = document.querySelectorAll(".send");
 if(send != null) {
   for(let button of send) {
@@ -109,13 +117,14 @@ if(send != null) {
         data += "&quantite=" + (isNaN(parseInt(container.querySelector("input").value)) ? 0 : container.querySelector("input").value);
       } else if(e.target.dataset.prestation === "nettoyage") {
         data = "";
-      } else if(e.target.dataset.prestation === "stationnement") {
-        let container = document.querySelector(".area").parentNode;
+      } else if(e.target.dataset.prestation === "atterrissage") {
+        let container = document.querySelector(".landing").parentNode;
         let manager = new MomentUtils();
 
-        data = "&zone=" + encodeURIComponent(container.querySelector("select").selectedOptions[0].value);
-        data += "&timetable=" + encodeURIComponent(container.querySelector("select").selectedOptions[0].innerHTML);
-        data += "&duration=" + container.querySelector("input").value;
+        data = "&zone=" + encodeURIComponent(container.querySelectorAll("select")[1].selectedOptions[0].value);
+        data += "&timetable=" + encodeURIComponent(container.querySelectorAll("select")[0].selectedOptions[0].innerHTML);
+        data += "&timetable_area=" + encodeURIComponent(container.querySelectorAll("select")[1].selectedOptions[0].innerHTML);
+        data += "&duration=" + (isNaN(parseInt(container.querySelector("input").value)) ? 0 : container.querySelector("input").value);
       }
 
       window.location.href = e.target.dataset.href + data;
@@ -123,21 +132,72 @@ if(send != null) {
   }
 }
 
+function getQueryVariable(_param) { // pour récupérer les paramètres passés dans l'url
+  let url = window.location.href;
+
+  _param = _param.replace(/[\[\]]/g, "\\$&");
+  let regex = new RegExp("[?&]" + _param + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+
+  if(!results) return null;
+  else if(!results[2]) return "";
+  else return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 let valid = document.querySelector("#accept");
 if(valid !== null) {
   valid.addEventListener("click", () => {
+    let action = document.querySelector("#date");
+    action = (action == null || action.value == "" ? "01/01/1970 01:00" : action.value);
+
     let manager = new MomentUtils();
     let data = decodeURIComponent(window.location.search.substring(1));
-    data += "&action=" + manager.timestamp(moment(document.querySelector("#date").value, "DD/MM/YYYY HH:mm")._d);
+    data += "&action=" + manager.timestamp(moment(action, "DD/MM/YYYY HH:mm")._d);
 
-    let request = new Request();
-    request.post("prestations.php", data, (response) => {
-      response = JSON.parse(response);
-      if(response.status == 200) {
-        window.location.href = "escale.php";
+    if(getQueryVariable("prestation") == "atterrissage") {
+      if(getQueryVariable("type") != null) {
+        sendPrestation(data, (response) => {
+          response = JSON.parse(response);
+          if(response.status == 200) {
+            popup.manager.open("<span>" + decodeURIComponent(response.message) + "</span>");
+          } else {
+            popup.manager.open("<span style=\"color: #A61835\">" + decodeURIComponent(response.message) + "</span>");
+          }
+        });
       } else {
-        popup.manager.open("<span style=\"color: #A61835\">" + decodeURIComponent(response.message) + "</span>");
+        sendPrestation(data, (response) => {
+          response = JSON.parse(response);
+          if(response.status == 200) {
+            data = data.replace(/prestation=atterrissage/g, "prestation=stationnement");
+            sendPrestation(data, (response) => {
+              response = JSON.parse(response);
+              if(response.status == 200) {
+                window.location.href = "escale.php";
+              } else {
+                popup.manager.open("<span style=\"color: #A61835\">" + decodeURIComponent(response.message) + "</span>");
+              }
+            });
+          } else {
+            popup.manager.open("<span style=\"color: #A61835\">" + decodeURIComponent(response.message) + "</span>");
+          }
+        });
       }
-    });
+    } else {
+      sendPrestation(data, (response) => {
+        response = JSON.parse(response);
+        if(response.status == 200) {
+          window.location.href = "escale.php";
+        } else {
+          popup.manager.open("<span style=\"color: #A61835\">" + decodeURIComponent(response.message) + "</span>");
+        }
+      });
+    }
+  });
+}
+
+function sendPrestation(data, callback) {
+  let request = new Request();
+  request.post("prestations.php", data, (response) => {
+    if(callback != undefined) callback(response);
   });
 }
