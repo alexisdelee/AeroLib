@@ -8,7 +8,7 @@ class Calendar {
     this.year = year;
 
     this[getNumberOfDays] = function(month, year) {
-      var isLeap = ((year % 4) == 0 && ((year % 100) != 0 || (year % 400) == 0));
+      let isLeap = ((year % 4) == 0 && ((year % 100) != 0 || (year % 400) == 0));
       return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
     }
 
@@ -17,9 +17,20 @@ class Calendar {
     this[getListOfDays] = function() {
       let firstday = (new Date(this.year, this.month, 1)).getDay();
       firstday = ((firstday + 6) % 7); // on replace dans le bon sens les jours (0 pour lundi et 6 pour dimanche)
-      let parent = document.querySelector("form");
+      let parent = document.querySelector("#days");
 
-      for(let index = 0, monthLen = this[getNumberOfDays](this.month, this.year) + firstday; index < monthLen; index++) {
+      parent.innerHTML = ""; // on vide le container
+      
+      let index = 0;
+      let monthLen = this[getNumberOfDays](this.month, this.year) + firstday - 1;
+      let timer = setInterval(_animation, 50);
+
+      document.querySelector(".spinner input[type=\"number\"]").setAttribute("value", this.year);
+      document.querySelector(".calendar h1").textContent = this.months[this.month] + " " + this.year;
+
+      function _animation() {
+        if(index >= monthLen) clearInterval(timer); // pour arrêter le timer
+
         let day = index - firstday + 1;
 
         let span = document.createElement("span");
@@ -27,6 +38,7 @@ class Calendar {
 
         let label = document.createElement("label");
         label.setAttribute("data-day", index);
+        label.setAttribute("onclick", "list(" + index + ")");
 
         label.classList.add("day");
         if(day < 1) label.classList.add("invalid");
@@ -34,7 +46,10 @@ class Calendar {
         label.appendChild(span);
         parent.appendChild(label);
 
-        document.querySelector(".calendar h1").textContent = this.months[this.month] + " " + this.year;
+        label.style.opacity = "0";
+        Velocity(label, {opacity: "1"}, {duration: 800});
+
+        index++;
       }
     }
 
@@ -43,19 +58,20 @@ class Calendar {
 
       document.querySelector(".js-value").textContent = this.months[this.month];
 
-      for(let month of this.months) {
+      for(let month = 0, n = this.months.length; month < n; month++) {
         let input = document.createElement("input");
         input.setAttribute("type", "radio");
-        input.setAttribute("id", month.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        input.setAttribute("id", this.months[month].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         input.setAttribute("name", "dropp");
         input.setAttribute("class", "_month");
-        input.setAttribute("value", month);
+        input.setAttribute("value", this.months[month]);
+        input.setAttribute("data-id", month);
 
         let label = document.createElement("label");
-        label.setAttribute("for", month.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
-        if(this.months[this.month] == month) label.classList.add("js-open");
+        label.setAttribute("for", this.months[month].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        if(this.months[this.month] == this.months[month]) label.classList.add("js-open");
 
-        label.innerHTML = month
+        label.innerHTML = this.months[month];
         label.appendChild(input);
 
         parent.appendChild(label);
@@ -69,31 +85,37 @@ class Calendar {
         monthsContainer.classList.add("js-open");
       });
 
-      let labels = document.querySelectorAll("label");
-      for(let label of labels) {
-        label.addEventListener("click", () => {
-          for(let _label of labels) {
-            _label.classList.remove("js-open");
+      let labels = document.querySelectorAll(".dropp label");
+      for(let label = 0, n = labels.length; label < n; label++) {
+        labels[label].addEventListener("click", () => {
+          for(let _label = 0; _label < n; _label++) {
+            labels[_label].classList.remove("js-open");
           }
 
-          label.classList.add("js-open");
+          labels[label].classList.add("js-open");
           monthContainer.classList.remove("js-open");
           monthsContainer.classList.remove("js-open");
         });
       }
 
       let _months = document.querySelectorAll("._month");
-      for(let month of _months) {
-        month.addEventListener("change", () => {
-          let value = document.querySelector("input:checked").value;
-          document.querySelector(".js-value").textContent = value;
+      for(let month = 0, n = _months.length; month < n; month++) {
+        _months[month].addEventListener("change", () => {
+          let input = document.querySelector("input:checked");
+          document.querySelector(".js-value").textContent = input.value;
+
+          let id = parseInt(input.dataset.id);
+          if(id != this.month) {
+            this.month = id;
+            this.load(false);
+          }
         });
       }
     }
   }
 
-  load() {
-    this[createMonthsSelector]();
+  load(uniq = true) {
+    if(uniq) this[createMonthsSelector]();
     this[getListOfDays]();
   }
 }

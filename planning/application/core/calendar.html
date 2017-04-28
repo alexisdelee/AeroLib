@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Calendar</title>
+    <title>AEN planning</title>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="calendar.css">
+    <style type="text/css">
+      body {
+        opacity: 0;
+      }
+    </style>
   </head>
   <body>
+    <span class="spinner">
+      <span class="sub">-</span>
+      <input type="number" min="1970" max="2100" value="2017" />
+      <span class="add">+</span>
+    </span>
+
     <div class="dropp">
       <div class="dropp-header"> <span class="dropp-header__title js-value"></span> <a href="#" id="month" class="dropp-header__btn js-dropp-action"><i class="icon"></i></a> </div>
       <div id="months" class="dropp-body"></div>
@@ -22,45 +33,36 @@
         <label class="weekday">Sam</label>
         <label class="weekday">Dim</label>
 
-        <!-- <label class='day' data-day='35'>
-          <input class='appointment' date-day='31' placeholder='What would you like to do?' required='true' type='text'>
-          <span>31</span>
-          <em></em>
-        </label> -->
-
+        <div id="days"></div>
       </form>
     </section>
 
+    <div class="separators" id="center"></div>
     <aside></aside>
 
-    <div id="separator"></div>
-    <div id="overlay"></div>
+    <div id="planes">
+      <ul></ul>
+    </div>
 
+    <div class="separators" id="aside"></div>
+
+    <div id="notification"></div>
+
+    <script type="text/javascript" src="libs/velocity/velocity.min.js"></script>
     <script type="text/javascript" src="Calendar.js"></script>
     <script type="text/javascript" src="list.js"></script>
     <script type="text/javascript">
-      let overlay = document.querySelector("#overlay");
-      let press = false;
-
-      window.addEventListener("keydown", (e) => {
-        if(e.keyCode === 32 && !press) {
-          press = true;
-          overlay.style.display = "inline-block";
-        }
-      });
-
-      window.addEventListener("keyup", (e) => {
-        if(e.keyCode === 32 && press) {
-          press = false;
-          overlay.style.display = "none";
-        }
-      });
+      Velocity(document.body, {opacity: "1"}, {duration: 800});
 
       window.addEventListener("keydown", (e) => {
         if(e.keyCode === 82) {
           window.location.reload();
         }
       });
+
+      let now = new Date();
+      var calendar = new Calendar(now.getMonth(), now.getFullYear());
+      calendar.load();
     </script>
   </body>
 </html>

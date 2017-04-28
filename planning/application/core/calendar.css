@@ -4,23 +4,11 @@
 }
 
 body {
-  background-color: #181818;
+  background: #181818;
   overflow: hidden;
 }
 
-#overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 450px;
-  height: 700px;
-  -webkit-app-region: drag;
-  -webkit-user-select: none;
-  display: none;
-}
-
 section.calendar {
-  /* background-color: #29323f; */
   font-family: 'Dosis', sans-serif;
   color: #fff;
   width: 290px;
@@ -159,17 +147,76 @@ section.calendar div.hidden {
   display: none;
 }
 
-#separator {
+.separators {
   position: absolute;
-  left: 380px;
-  top: 30px;
   width: 2px;
   height: 750px;
   background: #61b2a7;
+  opacity: 0.5;
+}
+
+#center {
+  left: 380px;
+  top: 30px;
+}
+
+#aside {
+  left: 650px;
+  top: 30px;
+}
+
+#planes {
+  position: absolute;
+  width: 600px;
+  height: 400px;
+  top: 325px;
+  left: 400px;
+  z-index: 100;
+}
+
+#planes ul {
+  list-style-type: none;
+}
+
+#planes li {
+  margin: 0 0 15px 0;
+}
+
+#planes input[type="checkbox"] {
+  display: none;
+}
+
+.labels {
+  cursor: pointer;
+  color: #999;
+  font-weight: bold;
+  line-height: 24px;
+}
+
+#planes input[type="checkbox"] + .labels:before {
+  border: 2px solid #61b2a7;
+  border-radius: 2px;
+  content: "\00a0";
+  display: inline-block;
+  font: 16px / 1em sans-serif;
+  height: 16px;
+  width: 16px;
+  margin: .1em .5em 0 0;
+  padding: 0;
+  vertical-align: top;
+  background: #61b2a7;
+}
+
+#planes input[type="checkbox"]:checked + .labels:before {
+  background: #181818;
+  color: #61b2a7;
+  content: "\2713";
+  text-align: center;
 }
 
 aside {
   background: #242424;
+  background-size: 80%;
   position: absolute;
   top: 0;
   right: 0;
@@ -311,3 +358,153 @@ aside {
 .dropp-body label.js-open { background: #4E7CAD; }
 
 .dropp-body label > input { display: none; }
+
+/* notifications */
+
+#notification {
+  position: absolute;
+  top: 30px;
+  left: 680px;
+  z-index: 100;
+  width: 585px;
+  height: 750px;
+  overflow-x: hidden;
+}
+
+.notifications {
+  position: relative;
+  width: 585px;
+  height: 60px;
+  background: #181818;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.ids {
+  float: left;
+  height: 100%;
+  width: 60px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  opacity: 0.8;
+}
+
+.names {
+  float: left;
+  height: 56px;
+  width: 230px;
+  opacity: 0.8;
+  font-weight: bold;
+  font-size: 17px;
+  text-align: center;
+  line-height: 57px;
+  background: #242424;
+}
+
+.times {
+  float: left;
+  height: 100%;
+  width: 291px;
+  line-height: 60px;
+  text-align: center;
+  font-weight: bold;
+  color: #999;
+}
+
+.times span {
+  margin-right: 15px;
+}
+
+/* scrollbar */
+
+::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar
+{
+  width: 7px;
+  background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb
+{
+  background-color: #4E7CAD; 
+}
+
+/* number spinner */
+
+input[type=number] {
+  float: left;
+  width: 102px;
+  height: 45px;
+  padding: 0;
+  line-height: 45px;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #4E7CAD;
+  border: 2px #4E7CAD solid;
+  background: none;
+  outline: none;
+  pointer-events: none;
+}
+
+span.spinner {
+  position: absolute;
+  top: 171px;
+  left: 80px;
+  height: 50px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+span.spinner > .sub,
+span.spinner > .add {
+  float: left;
+  display: block;
+  width: 55px;
+  height: 45px;
+  text-align: center;
+  font-family: Lato;
+  font-weight: 700;
+  font-size: 1.2em;
+  line-height: 43px;
+  color: #4E7CAD;
+  border: 2px #4E7CAD solid;
+  border-right: 0;
+  border-radius: 2px 0 0 2px;
+  cursor: pointer;
+  transition: 0.1s linear;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+span.spinner > .add {
+  top: 0;
+  border: 2px #4E7CAD solid;
+  border-left: 0;
+  border-radius: 0 2px 2px 0;
+}
+
+span.spinner > .sub:hover,
+span.spinner > .add:hover {
+  background: #4E7CAD;
+  color: #25323B;
+}
+ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+ -webkit-appearance: none;
+}
+
+#notfound {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 512px;
+  width: 512px;
+  margin: -256px;
+  background: url("res/notfound.png");
+  -webkit-filter: grayscale(100%);
+}
