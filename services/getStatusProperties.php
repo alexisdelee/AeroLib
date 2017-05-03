@@ -11,43 +11,48 @@
     ]
   ];
 
-  if(isset($_GET["type"], $_GET["start"], $_GET["end"])) {
+  if(isset($_POST["type"], $_POST["start"], $_POST["end"])) {
     $manager = PDOUtils::getSharedInstance();
 
     $plane = $manager->getAll("
       SELECT idPrivatePlane FROM `privateplane`
       WHERE type = ?
-    ", [$_GET["type"]]);
+    ", [$_POST["type"]]);
 
     if(empty($plane)) {
-      $response["type"] = $_GET["type"];
+      $response["type"] = $_POST["type"];
 
       _response_code(401, "unauthorized", $response);
     }
 
     $planes = $manager->getAll("
-      SELECT dateStart, dateEnd FROM `privateplane` AS private
-        LEFT JOIN `aeroclub` ON private.idPrivatePlane = aeroclub.idPrivatePlane
-      WHERE private.type = ?
-        AND ((
-          ? <= aeroclub.dateStart
-          AND ? >= aeroclub.dateStart
-            ) OR (
-          ? <= aeroclub.dateEnd
-          AND ? >= aeroclub.dateEnd
-            ))
-    ", [$_GET["type"], $_GET["start"], $_GET["end"], $_GET["start"], $_GET["end"]]);
+      SELECT service.dateStart, service.dateEnd FROM `service`
+        LEFT JOIN `aeroclub` ON service.idAeroclub = aeroclub.idAeroclub
+      WHERE aeroclub.idAeroclub in
+          (SELECT idAeroclub FROM `service`
+          WHERE ((
+            dateStart >= ?
+            AND dateStart <= ?
+              ) OR (
+            dateEnd >= ?
+            AND dateEnd <= ?
+              ))
+          )
+        AND aeroclub.idPrivatePlane in
+          (SELECT idPrivatePlane FROM `privateplane`
+          WHERE type = ?)
+      ORDER BY aeroclub.dateStart ASC
+    ", [$_POST["start"], $_POST["end"], $_POST["start"], $_POST["end"], $_POST["type"]]);
 
-    if(!empty($planes)) {
+    if(empty($planes)) {
+      $response["type"] = $_POST["type"];
 
-      $response["type"] = $_GET["type"];
+      _response_code(200, "ok", $response);
+    } else {
+      $response["type"] = $_POST["type"];
       $response["reserve"] = $planes;
 
       _response_code(406, "unavailable", $response);
-    } else {
-      $response["type"] = $_GET["type"];
-
-      _response_code(200, "ok", $response);
     }
   } else {
     _response_code(401, "unauthorized", $response);

@@ -5,31 +5,57 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import java.nio.ByteBuffer;
-import java.security.SecureRandom;
 import java.util.zip.CRC32;
 import java.util.UUID;
 
-public class Excel {	
-	public Excel() {}
+public class Excel {
+	private HSSFWorkbook workbook_;
+	private HSSFSheet sheet_;
+	private int cursor_;
+	private String filename_;
 	
-	public void create(String filename, String title) {
+	public Excel(String title) {
+		this.workbook_ = new HSSFWorkbook();
+		this.sheet_ = this.workbook_.createSheet(title);
+		this.cursor_ = 1;
+		this.filename_ = null;
+	}
+	
+	public void header(String[] head) {
+		HSSFRow row = this.sheet_.createRow(0);
+		HSSFCell cell = null;
+		
+		for(int h = 0, _length = head.length; h < _length; h++) {			
+			cell = row.createCell((short)h);
+			cell.setCellValue(head[h]);
+			this.sheet_.autoSizeColumn(h);
+		}
+	}
+	
+	public void append(String[] data) {
+		HSSFRow row = this.sheet_.createRow(this.cursor_);
+		HSSFCell cell = null;
+		
+		for(int d = 0, _length = data.length; d < _length; d++) {			
+			cell = row.createCell((short)d);
+			cell.setCellValue(data[d]);
+			
+			this.sheet_.autoSizeColumn(d);
+		}
+		
+		this.cursor_++;
+	}
+	
+	public void generate(String filename) {
+		this.filename_ = filename;
+		
 		try {
-			HSSFWorkbook workbook = new HSSFWorkbook();
-			HSSFSheet sheet = workbook.createSheet(title);
-			
-			HSSFRow rowhead = sheet.createRow((short)0);
-			rowhead.createCell(0).setCellValue("No.");
-			
-			HSSFRow row = sheet.createRow((short)1);
-			row.createCell(0).setCellValue("1");
-			
 			FileOutputStream fileExport = new FileOutputStream(filename);
-			workbook.write(fileExport);
+			this.workbook_.write(fileExport);
 			fileExport.close();
-			System.out.println("Your excel file has been generated!");
-		} catch(Exception ex) {
-			System.out.println(ex);
+			this.workbook_.close();
+		} catch(Exception e) {
+			System.out.println(e);
 		}
 	}
 	
@@ -39,5 +65,9 @@ public class Excel {
 		CRC32 crc = new CRC32();
 		crc.update(suuid.getBytes());
 		return Long.toHexString(crc.getValue());
+	}
+	
+	public String getFilename() {
+		return this.filename_;
 	}
 }

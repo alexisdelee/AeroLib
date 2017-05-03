@@ -1,0 +1,103 @@
+@font-face {
+  font-family: "Fjalla One";
+  src: url("res/FjallaOne-Regular.ttf");
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: #181818;
+}
+
+header {
+  border-bottom: 1px solid rgba(34, 34, 34, 0.2);
+  box-shadow: inset 0 10px 10px #4e7cad;
+  background-color: #4e7cad;
+}
+
+.container {
+  background: #4e7cad url("res/overlay.png") 0 50%;
+  padding: 30px 0;
+}
+
+.centered {
+  width: 940px;
+  margin: 0 auto;
+}
+
+.circle {
+  background-color: #4e7cad;
+  width: 180px;
+  height: 180px;
+  margin: 20px auto;
+  position: relative;
+  border: 8px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 8px rgba(34, 34, 34, 0.3), inset 0 1px 8px rgba(34, 34, 34, 0.3);
+}
+
+.logo {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border-radius: 50%;
+  background: url("res/logo.png");
+  background-size: cover;
+  background-position: 25% 0;
+}
+
+.title {
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(34, 34, 34, 0.5);
+}
+
+.title h1, .title h2 {
+  font-weight: 400;
+}
+
+.title h1 {
+  font-size: 60px;
+  margin: 0;
+}
+
+.title h1 span {
+  color: #a7bed6;
+  font-size: 0.4em;
+  text-transform: uppercase;
+}
+
+.title h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+footer {
+  position: absolute;
+  top: 387px;
+  left: 0;
+  width: 100%;
+  height: 422px;
+  background: #292929;
+}
+
+footer h2 {
+  position: absolute;
+  top: 130px;
+  left: 50%;
+  margin-left: -280px;
+  font-family: 'Fjalla One', sans-serif;
+  color: #EEE;
+  opacity: 0.8;
+  text-align: center;
+}
+
+footer h2 a {
+  text-decoration: none;
+  color: #4e7cad;
+}

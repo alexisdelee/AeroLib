@@ -15,7 +15,8 @@
     "atterrissage" => "localhost/aerodrome/services/atterrissage.php",
     "stationnement" => "localhost/aerodrome/services/stationnement.php",
     "avitaillement" => "localhost/aerodrome/services/avitaillement.php",
-    "nettoyage" => "localhost/aerodrome/services/nettoyage.php"
+    "nettoyage" => "localhost/aerodrome/services/nettoyage.php",
+    "simple_service" => "localhost/aerodrome/services/simple_services.php"
   );
 
   if(!array_key_exists($_POST["prestation"], $services)) { // vérification de l'existence de la prestation
@@ -35,26 +36,46 @@
   $response = json_decode(curl_exec($init), true);
   $code = curl_getinfo($init)["http_code"];
 
-  if($code == 200 && $response["options"]["id_plane"] != -1) {
+  if($code == 200) {
     $manager = PDOUtils::getSharedInstance();
 
-    $manager->exec("
-      INSERT INTO `service`(description, subscription, inscription, dateStart, dateEnd, idReceipt, idPlane, costService, tvaService)
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ", [
-      utf8_decode($response["description"]),
-      $response["subscription"],
-      $response["inscription"],
-      $response["options"]["start"],
-      $response["options"]["end"],
-      getLastReceip($_POST["email"]),
-      $response["options"]["id_plane"],
-      $response["options"]["cost"],
-      $response["options"]["tva"]
-    ]);
+    if(in_array($_POST["prestation"], ["simple_service", "extra_service"]) && isset($response["options"]["id_aeroclub"]) && $response["options"]["id_aeroclub"] != "NULL") {
+      $manager->exec("
+        INSERT INTO `service`(description, subscription, inscription, dateStart, dateEnd, idReceipt, idAeroclub, costService, tvaService)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ", [
+        utf8_decode($response["description"]),
+        $response["subscription"],
+        $response["inscription"],
+        $response["options"]["start"],
+        $response["options"]["end"],
+        getLastReceip($_POST["email"]),
+        $response["options"]["id_aeroclub"],
+        $response["options"]["cost"],
+        $response["options"]["tva"]
+      ]);
 
-    $_SESSION["prestation"]["cost"] = $response["options"]["cost"];
-    $_SESSION["prestation"]["tva"] = $response["options"]["tva"];
+      $_SESSION["prestation"]["cost"] = $response["options"]["cost"];
+      $_SESSION["prestation"]["tva"] = $response["options"]["tva"];
+    } else if(isset($response["options"]["id_plane"]) && $response["options"]["id_plane"] != -1) {
+      $manager->exec("
+        INSERT INTO `service`(description, subscription, inscription, dateStart, dateEnd, idReceipt, idPlane, costService, tvaService)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ", [
+        utf8_decode($response["description"]),
+        $response["subscription"],
+        $response["inscription"],
+        $response["options"]["start"],
+        $response["options"]["end"],
+        getLastReceip($_POST["email"]),
+        $response["options"]["id_plane"],
+        $response["options"]["cost"],
+        $response["options"]["tva"]
+      ]);
+
+      $_SESSION["prestation"]["cost"] = $response["options"]["cost"];
+      $_SESSION["prestation"]["tva"] = $response["options"]["tva"];
+    }
   }
 
   echo json_encode(array("status" => $code, "message" => $response["message"]));

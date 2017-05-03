@@ -322,6 +322,16 @@ input {
   background-size: 120%;
 }
 
+.simple_services a:before, .simple_services a:after {
+  content: "";
+  background: url("../res/prestations/aeroclub.png") no-repeat -2px 60px;
+  background-size: 80%;
+}
+.simple_services a:after {
+  background: url("../res/prestations/aeroclub.png") no-repeat -15px 40px #3B5998;
+  background-size: 120%;
+}
+
 .send {
   position: absolute;
   right: 15px;

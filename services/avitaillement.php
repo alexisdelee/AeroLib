@@ -94,7 +94,7 @@
         AND dateStart <= ?
         AND dateEnd >= ?
         AND idPlane =
-          (SELECT @id := plane.idPlane FROM `plane`
+          (SELECT plane.idPlane FROM `plane`
             LEFT JOIN `user` ON plane.idUser = user.idUser
           WHERE user.email = ?
             AND plane.matricule = ?)

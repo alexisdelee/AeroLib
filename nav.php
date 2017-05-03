@@ -7,7 +7,7 @@
     <div class="nav-services">
       <a class="nav-service active" href="index.php">Accueil</a>
       <a class="nav-service" href="escale.php">Escale</a>
-      <a class="nav-service" href=".">Aéroclub</a>
+      <a class="nav-service" href="aeroclub.php">Aéroclub</a>
     </div>
 
     <?php if($router->state){ ?>
