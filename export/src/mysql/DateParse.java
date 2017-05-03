@@ -25,7 +25,7 @@ public class DateParse {
 	
 	public String date(String timestamp) {
 		try {			
-			DateFormat formatter = new SimpleDateFormat("dd/MM/YYYY HH:mm");
+			DateFormat formatter = new SimpleDateFormat("dd/MM/YYYY' 'HH:mm:ss");
 			Timestamp stamp = new Timestamp(Long.parseLong(timestamp, 10) * 1000);
 			
 			return formatter.format(new Date(stamp.getTime()));

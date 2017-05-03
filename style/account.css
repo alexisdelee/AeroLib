@@ -272,3 +272,227 @@ td {
   border-radius: 3px;
   transition: all 0.3s;
 }
+
+/* staff */
+
+@import url(http://fonts.googleapis.com/css?family=Varela+Round);
+
+.icon {
+  display: block;
+  position: relative;
+  width: 1.5em;
+  height: 1.5em;
+  margin: 0 auto;
+}
+
+.icon:before,
+.icon:after {
+  content: "";
+  position: absolute;
+}
+
+.dropp {
+  width: 220px;
+  box-shadow: 0 1px 3px #0a0a0a;
+  position: absolute;
+  top: 360px;
+  left: 50%;
+  margin-left: -120px;
+  z-index: 100;
+  font: 1em "Varela Round", Arial, sans-serif;
+  color: #999;
+}
+
+.dropp-header {
+  background: #242424;
+  color: #fff;
+  border-bottom: 2px solid #4E7CAD;
+  box-align: stretch;
+  align-items: stretch;
+  display: box;
+  display: flex;
+  box-orient: horizontal;
+  box-direction: normal;
+  flex-direction: row;
+  box-pack: start;
+  justify-content: flex-start;
+}
+
+.dropp-header__title {
+  display: block;
+  padding: 1em 0.5em;
+  box-flex: 8;
+  flex: 8;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
+.dropp-header__btn {
+  display: block;
+  background: #1c1c1c;
+  color: #fff;
+  padding: 0.8em 0.5em;
+  box-flex: 1;
+  flex: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+.dropp-header__btn .icon {
+  transform: rotate(-90deg);
+}
+
+.dropp-header__btn .icon:before,
+.dropp-header__btn .icon:after {
+  top: 30%;
+  left: 25%;
+  width: 50%;
+  height: 15%;
+  background: #4E7CAD;
+  transform: rotate(-45deg);
+}
+
+.dropp-header__btn .icon:after {
+  top: 55%;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.dropp-header__btn.js-open { background: #4E7CAD; }
+
+.dropp-header__btn.js-open .icon {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.dropp-header__btn.js-open .icon:before,
+.dropp-header__btn.js-open .icon:after { background: #fff; }
+
+.dropp-header__btn:focus { outline: none; }
+
+.dropp-body {
+  overflow: hidden;
+  width: 100%;
+  max-height: 0;
+  background: #292929;
+  color: #fff;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+
+.dropp-body.js-open { max-height: 35em; }
+
+.dropp-body label {
+  display: block;
+  font-size: 0.875em;
+  color: #fff;
+  text-decoration: none;
+  padding: 1em 0.5em;
+  font-weight: 400;
+  box-shadow: 0 -1px 0 #171717, inset 0 1px 0 #313131;
+  cursor: pointer;
+}
+
+.dropp-body label:first-child { box-shadow: none; }
+
+.dropp-body label:hover,
+.dropp-body label.js-open { background: #4E7CAD; }
+
+.dropp-body label > input { display: none; }
+
+input[type=number] {
+  float: left;
+  width: 110px;
+  height: 45px;
+  padding-left: 5px;
+  line-height: 45px;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #4E7CAD;
+  border: 2px #4E7CAD solid;
+  background: none;
+  outline: none;
+  pointer-events: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+span.spinner {
+  position: absolute;
+  top: 413px;
+  height: 50px;
+  left: 50%;
+  margin-left: -120px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+span.spinner > .sub,
+span.spinner > .add {
+  float: left;
+  display: block;
+  width: 55px;
+  height: 45px;
+  text-align: center;
+  font-family: Lato;
+  font-weight: 700;
+  font-size: 1.2em;
+  line-height: 43px;
+  color: #4E7CAD;
+  border: 2px #4E7CAD solid;
+  border-right: 0;
+  border-radius: 2px 0 0 2px;
+  cursor: pointer;
+  transition: 0.1s linear;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+span.spinner > .add {
+  top: 0;
+  border: 2px #4E7CAD solid;
+  border-left: 0;
+  border-radius: 0 2px 2px 0;
+}
+
+span.spinner > .sub:hover,
+span.spinner > .add:hover {
+  background: #4E7CAD;
+  color: #25323B;
+}
+ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+ -webkit-appearance: none;
+}
+
+#generate {
+  position: absolute;
+  display: inline-block;
+  top: 457px;
+  left: 50%;
+  margin-left: -120px;
+  width: 220px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  color: #FFF;
+  background: #4e7cad;
+  border-bottom: 3px solid #222222;
+  cursor: pointer;
+}
+
+#generate a {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}

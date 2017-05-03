@@ -20,14 +20,23 @@
   ];
 
   $router->exceptions = [
+    "user" => [
+      "phpmyadmin" => "escale.php",
+    ],
     "root" => [
       "escale" => "phpmyadmin.php",
       "aeroclub" => "phpmyadmin.php",
       "basket" => "phpmyadmin.php",
       "account" => "phpmyadmin.php"
     ],
-    "user" => [
-      "phpmyadmin" => "escale.php",
+    "staff" => [
+      "escale" => "account.php",
+      "aeroclub" => "account.php",
+      "basket" => "account.php",
+      "localisation" => "account.php",
+      "weatherService" => "account.php",
+      "phpmyadmin" => "account.php",
+      "phptopdf" => "account.php"
     ]
   ];
 

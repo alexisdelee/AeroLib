@@ -31,7 +31,7 @@
         }
 
         if($this->exceptions) { // redirections
-          foreach($this->exceptions[$this->permission == 2 ? "root" : "user"] as $key_ => $exception) {
+          foreach($this->exceptions[$this->permission == 2 ? "root" : ($this->permission == 3 ? "staff" : "user")] as $key_ => $exception) {
             if($location === $key_) {
               /* if($location !== "phpmyadmin") {
                 $_SESSION["localisation"] = $location . ".php";

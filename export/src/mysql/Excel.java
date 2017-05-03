@@ -50,7 +50,7 @@ public class Excel {
 		this.filename_ = filename;
 		
 		try {
-			FileOutputStream fileExport = new FileOutputStream(filename);
+			FileOutputStream fileExport = new FileOutputStream("../account/" + filename);
 			this.workbook_.write(fileExport);
 			fileExport.close();
 			this.workbook_.close();
@@ -67,7 +67,7 @@ public class Excel {
 		return Long.toHexString(crc.getValue());
 	}
 	
-	public String getFilename() {
-		return this.filename_;
+	public String getPathname() {
+		return "account/" + this.filename_;
 	}
 }

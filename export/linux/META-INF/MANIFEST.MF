@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-CLass: mysql.Main
-Class-Path: lib/mysql-connector-java-5.1.41-bin.jar

@@ -2,16 +2,14 @@ package mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.regex.*;
 
 public class Main {
-	public static void main(String[] args) {		
-		// String url = "jdbc:mysql://192.168.10.141:3306/aerodrome";
-		// String login = "staff";
-		// String passwd = "staff";
+	public static void main(String[] args) {
 		String url = "jdbc:mysql://localhost/aerodrome";
-		String login = "root";
-		String passwd = "";
+		String login = "staff";
+		String passwd = "staff";
 		
 		if(args.length == 2) {
 			Pattern pattern = Pattern.compile("^0[1-9]|1[0-2]$");
@@ -61,14 +59,14 @@ public class Main {
 						((Integer)rs.getObject("idAeroclub") == null ? "non" : "oui"),
 						String.valueOf(rs.getDouble("costService")),
 						String.valueOf(rs.getDouble("tvaService")),
-						String.format("%.2f", rs.getDouble("costService") + rs.getDouble("tvaService"))
+						String.format(Locale.ROOT, "%.2f", rs.getDouble("costService") + rs.getDouble("tvaService"))
 					};
 					xls.append(data);
 				}
 				
 				xls.generate("facture-" + xls.uniqid() + ".xls");
 				
-				System.out.println(xls.getFilename());
+				System.out.println(xls.getPathname());
 			} catch(SQLException e) {
 				e.printStackTrace();
 			} finally {
