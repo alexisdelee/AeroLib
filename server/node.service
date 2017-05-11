@@ -1,0 +1,17 @@
+[Unit]
+Description=Contacts aen service
+
+[Service]
+WorkingDirectory=/var/www/aerodrome
+ExecStart=/usr/bin/node serverCluster.js
+Restart=always
+RestartSec=500ms
+StandardOuput=syslog
+StandardError=syslog
+SyslogIdentifier=nodejs
+User=www-data
+Group=www-data
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
