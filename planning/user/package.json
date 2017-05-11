@@ -11,10 +11,13 @@
   "window": {
     "height": 800,
     "width": 1270,
-    "resizable": false
+    "resizable": false,
+    "icon": "core/res/logo.png"
   },
   "description": "",
   "devDependencies": {
-    "mysql": "^2.13.0"
+    "bcrypt": "^1.0.2",
+    "mysql": "^2.13.0",
+    "request": "^2.81.0"
   }
 }

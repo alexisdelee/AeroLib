@@ -98,8 +98,20 @@
       $pdf->SetFont("Arial", "", "10");
       $pdf->Cell(180, 0, utf8_decode("École de pilotage avion / ulm - Vol decouverte et initiation"), 0, 1, "R");
 
+      $user = $manager->getAll("
+        SELECT name FROM `user`
+        WHERE email = ?
+      ", [$_SESSION["email"]]);
+
+      if(empty($user)) {
+        header("Location: index.php");
+      }
+
+      $pdf->SetFont("Arial", "B", "10");
+      $pdf->Cell(180, 30, utf8_decode("à destination de Madame/Monsieur " . utf8_encode($user[0]["name"])), 0, 1, "R");
+
       $pdf->SetFont("Arial", "B", "20");
-      $pdf->Cell(0, 100, utf8_decode("Facture n°" . $data[0]["idReceipt"] . " du " . date("d/m/Y", $data[0]["creation"]) . " à " . date("H:i:s", $data[0]["creation"])), 0, 1, "C");
+      $pdf->Cell(0, 70, utf8_decode("Facture n°" . $data[0]["idReceipt"] . " du " . date("d/m/Y", $data[0]["creation"]) . " à " . date("H:i:s", $data[0]["creation"])), 0, 1, "C");
       $pdf->SetFont("Arial", "", "10");
 
       $header = ["Ref.", "D" . chr(233) . "tails", "HT", "TVA", "TTC"];
@@ -119,15 +131,6 @@
 
       $pdf->SetFont("Arial", "", 10);
       $pdf->BasicTable($header, $values, [number_format($data[0]["totalCost"], 2, ",", " ") . chr(128), number_format($data[0]["totalTva"], 2, ",", " ") . chr(128), number_format($data[0]["totalCost"] + $data[0]["totalTva"], 2, ",", " ") . chr(128)], $penality);
-
-      $user = $manager->getAll("
-        SELECT name FROM `user`
-        WHERE email = ?
-      ", [$_SESSION["email"]]);
-
-      $pdf->SetFont("Arial", "", "10");
-      $pdf->SetTextColor(0);
-      $pdf->Cell(-190, -125, utf8_decode("à destination de Madame/Monsieur ") . (empty($user) ? $_SESSION["email"] : $user[0]["name"]), 0, 1, "C");
 
       $pdf->Output();
     }

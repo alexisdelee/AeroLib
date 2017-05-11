@@ -6,8 +6,8 @@
     "message" => "",
     "type" => "",
     "reserve" => [
-      "start" => 0,
-      "end" => 0
+      "dateStart" => 0,
+      "dateEnd" => 0
     ]
   ];
 
@@ -41,7 +41,7 @@
         AND aeroclub.idPrivatePlane in
           (SELECT idPrivatePlane FROM `privateplane`
           WHERE type = ?)
-      ORDER BY aeroclub.dateStart ASC
+      ORDER BY service.dateStart ASC
     ", [$_POST["start"], $_POST["end"], $_POST["start"], $_POST["end"], $_POST["type"]]);
 
     if(empty($planes)) {

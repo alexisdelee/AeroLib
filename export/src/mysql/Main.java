@@ -34,7 +34,7 @@ public class Main {
 			PDOUtils bdd = new PDOUtils(url, login, passwd);
 			DateParse date = new DateParse();
 			
-			long[] limits = date.monthLimits("04", "2017");
+			long[] limits = date.monthLimits(args[0], args[1]);
 			
 			try {
 				ResultSet rs = bdd.execute("SELECT user.name, service.description, service.subscription, service.dateStart, service.dateEnd, service.idAeroclub, service.costService, service.tvaService FROM `receipt` "

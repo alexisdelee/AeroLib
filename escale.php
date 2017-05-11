@@ -126,7 +126,8 @@
                <a title="Atterrissage" href="#area">Atterrissage</a>
             </div>
             <div class="paragraph">
-              <h1 style="margin-top: -50px;">Atterrissage</h1>
+              <h2 style="margin-top: -40px;">Atterrissage</h2><br>
+
               <select class="min-select" style="margin-top: -10px;">
                 <option value="defaut">Forfait</option>
                 <?php
@@ -141,7 +142,8 @@
                 ?>
               </select>
 
-              <h2 style="margin-top: 10px;">Stationnement</h2>
+              <h3 style="margin-top: 5px; margin-bottom: 10px;">Stationnement</h3>
+
               <p>
                 <select class="min-select">
                   <option value="defaut">Zone de stationnement</option>
@@ -173,7 +175,8 @@
               <a title="Avitaillement" href="#reservoir">Avitaillement</a>
             </div>
             <div class="paragraph">
-              <h1>Avitaillement</h1>
+              <h2 style="margin-top: 10px;">Avitaillement</h2><br>
+
               <p>
                 <select class="min-select">
                   <?php
@@ -197,7 +200,7 @@
               <a title="Nettoyage" href="#cleaning">Nettoyage</a>
             </div>
             <div class="paragraph">
-              <h1>Nettoyage</h1>
+              <h2 style="margin-top: 10px;">Nettoyage</h2><br>
 
               <?php
                 $result = $manager->getAll("

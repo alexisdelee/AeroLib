@@ -508,3 +508,121 @@ span.spinner > .add:hover {
   background: url("res/notfound.png");
   -webkit-filter: grayscale(100%);
 }
+
+/* popup */
+
+#popup header {
+  position: absolute;
+  z-index: 190;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #242424 url("res/overlay_dark.png");
+  cursor: pointer;
+}
+
+#popup .container {
+  position: absolute;
+  z-index: 200;
+  width: 1000px;
+  height: 350px;
+  top: 50%;
+  left: 50%;
+  margin: -175px -500px;
+  background: #242424;
+  border: 1px solid #61b2a7;
+  border-radius: 2px;
+}
+
+#popup .container #options {
+  position: absolute;
+  top: 240px;
+  left: 50%;
+  margin-left: -55px;
+  display: inline-block;
+  width: 110px;
+  height: 50px;
+  background: red;
+  cursor: pointer;
+}
+
+#popup .container #options span {
+  display: inline-block;
+  float: left;
+  width: 54px;
+  height: 100%;
+  transition: all 0.4s;
+  font-size: 16px;
+  text-align: center;
+  line-height: 50px;
+  font-weight: bold;
+}
+
+#popup .container #options span:hover {
+  height: 60px;
+  line-height: 60px;
+  margin-top: -5px;
+  border-color: transparent;
+}
+
+#popup .container #options .left {
+  background: #61b2a7;
+  border-right: 1px solid #61b2a7;
+}
+
+#popup .container #options .right {
+  background: #A61835;
+  border-left: 1px solid #A61835;
+}
+
+#popup .container table {
+  position: relative;
+  left: 50%;
+  top: 70px;
+}
+
+th {
+  color: #D5DDE5;;
+  background: #1b1e24;
+  border-right: 1px solid #343a45;
+  padding: 15px;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  vertical-align: middle;
+  font-size: 17px;
+}
+
+th:first-child {
+  border-top-left-radius:3px;
+}
+ 
+th:last-child {
+  border-top-right-radius:3px;
+  border-right:none;
+}
+  
+tr {
+  border-top: 1px solid #C1C3D1;
+  border-bottom-: 1px solid #C1C3D1;
+  color: #666B85;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+}
+ 
+tr:first-child {border-top: none;}
+tr:last-child {border-bottom: none;}
+tr:last-child td:first-child {border-bottom-left-radius: 3px;}
+tr:last-child td:last-child {border-bottom-right-radius: 3px;}
+ 
+td {
+  background: #FFFFFF;
+  padding: 15px;
+  font-size: 17px;
+  text-align: center;
+  vertical-align: middle;
+  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #C1C3D1;
+  background: #EEE;
+  max-width: 210px;
+  overflow: hidden;
+}

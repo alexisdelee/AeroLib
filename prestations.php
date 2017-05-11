@@ -16,7 +16,8 @@
     "stationnement" => "localhost/aerodrome/services/stationnement.php",
     "avitaillement" => "localhost/aerodrome/services/avitaillement.php",
     "nettoyage" => "localhost/aerodrome/services/nettoyage.php",
-    "simple_service" => "localhost/aerodrome/services/simple_services.php"
+    "simple_service" => "localhost/aerodrome/services/simple_services.php",
+    "extra_service" => "localhost/aerodrome/services/extra_service.php"
   );
 
   if(!array_key_exists($_POST["prestation"], $services)) { // vérification de l'existence de la prestation
@@ -41,18 +42,19 @@
 
     if(in_array($_POST["prestation"], ["simple_service", "extra_service"]) && isset($response["options"]["id_aeroclub"]) && $response["options"]["id_aeroclub"] != "NULL") {
       $manager->exec("
-        INSERT INTO `service`(description, subscription, inscription, dateStart, dateEnd, idReceipt, idAeroclub, costService, tvaService)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO `service`(description, subscription, inscription, dateStart, dateEnd, contributions, idReceipt, idAeroclub, costService, tvaService)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ", [
         utf8_decode($response["description"]),
         $response["subscription"],
         $response["inscription"],
         $response["options"]["start"],
         $response["options"]["end"],
+        isset($response["options"]["contributions"]) ? $response["options"]["contributions"] : 0,
         getLastReceip($_POST["email"]),
         $response["options"]["id_aeroclub"],
         $response["options"]["cost"],
-        $response["options"]["tva"]
+        $response["options"]["tva"],
       ]);
 
       $_SESSION["prestation"]["cost"] = $response["options"]["cost"];

@@ -1,5 +1,5 @@
 const http = require("http");
-const mysql = require("mysql");
+const request = require("request");
 
 let planes = [];
 let notificationContainer = document.querySelector("#notification");
@@ -28,22 +28,7 @@ function list(index) {
 listOfPlanes();
 
 function listOfPlanes() {
-  let connection = mysql.createConnection({
-    // host: "192.168.91.141",
-    host: "localhost",
-    user: "user",
-    password: "user",
-    database: "aerodrome"
-  });
-
-  connection.connect();
-
-  connection.query("SELECT `idPrivatePlane`, `type`, `use` FROM `privateplane`", (err, results, fields) => {
-    if(err) {
-      alert(err);
-      return;
-    }
-
+  mysql.exec("SELECT `idPrivatePlane`, `type`, `use` FROM `privateplane`", [], (results, fields) => {
     let parent = document.querySelector("#planes ul");
 
     for(let result of results) {
@@ -65,12 +50,13 @@ function listOfPlanes() {
       parent.appendChild(li);
 
       planes.push({
+        id: result.idPrivatePlane,
         type: result.type,
         use: result.use,
         status: true
       });
 
-      /* gestion des évènements */
+      // gestion des évènements
 
       input.addEventListener("click", (e) => {
         let nameOfPlane = result.type;
@@ -89,8 +75,6 @@ function listOfPlanes() {
       });
     }
   });
-
-  connection.end();
 }
 
 function planning(start, end) {
@@ -99,44 +83,32 @@ function planning(start, end) {
   }, 200);
   statusContainer = false;
 
-  for(let plane of planes) {
-    if(!plane.status) continue; // si l'avion est désactivé, on passe au suivant
+  for(let plane = 0, p = planes.length; plane < p; plane++) {
+    if(!planes[plane].status) continue; // si l'avion est désactivé, on passe au suivant
 
-    http.get("http://localhost/aerodrome/services/getStatusProperties.php?type=" + plane.type + "&start=" + start + "&end=" + end, (res) => {
-      const { statusCode } = res;
-      const contentType = res.headers["content-type"];
-
-      if(statusCode == 200) {
-        if(statusContainer == false) {
+    request.post({
+      headers: {"Content-type": "application/x-www-form-urlencoded"},
+      url: "http://localhost/aerodrome/services/getStatusProperties.php",
+      form: {"type": planes[plane].type, "start": start, "end": end}
+    }, (err, response, body) => {
+      if(response.statusCode == 406) { // on récupère uniquement les avions indisponibles
+        if(!statusContainer) {
           clearTimeout(timer);
           notificationContainer.innerHTML = "";
           statusContainer = true;
         }
 
-        res.setEncoding("utf8");
-        let rawData = "";
-        res.on("data", (chunk) => { rawData += chunk; });
-        res.on("end", () => {
-          try {
-            const parsedData = JSON.parse(rawData);
+        const parsedData = JSON.parse(body);
 
-            for(let _reserve = 0, n = parsedData.reserve.length; _reserve < n; _reserve++) {
-              _create_notification(plane.type, plane.use, timestampToDate(parsedData.reserve[_reserve].dateStart), timestampToDate(parsedData.reserve[_reserve].dateEnd));
-            }
-          } catch(e) {
-            alert(e.message);
-          }
-        });
+        for(let _reserve = 0, n = parsedData.reserve.length; _reserve < n; _reserve++) {
+          _create_notification(planes[plane].id, planes[plane].type, planes[plane].use, timestampToDate(parsedData.reserve[_reserve].dateStart), timestampToDate(parsedData.reserve[_reserve].dateEnd), [parsedData.reserve[_reserve].dateStart, parsedData.reserve[_reserve].dateEnd]);
+        }
       }
-
-      res.resume(); // libère de la mémoire
-    }).on("error", (e) => {
-      alert("Got error: " + e.message);
     });
   }
 }
 
-function _create_notification(type, use, start, end) {
+function _create_notification(idPlane, type, use, start, end, options) {
   let id = document.createElement("div");
   let idColor = strToHex(type);
   id.setAttribute("title", use);
@@ -154,7 +126,7 @@ function _create_notification(type, use, start, end) {
   name.style.color = idColor;
 
   let time = document.createElement("div");
-  time.innerHTML = "<span>" + start + "</span><span>" + end + "</span>";
+  time.innerHTML = "<span class=\"dateStart\" data-time=\"" + start + "\">" + start + "</span><span class=\"dateStart\" data-time=\"" + start + "\">" + end + "</span>";
 
   id.classList.add("ids");
   name.classList.add("names");
@@ -166,6 +138,15 @@ function _create_notification(type, use, start, end) {
   container.appendChild(id);
   container.appendChild(name);
   container.appendChild(time);
+
+  /* Event */
+  if(root) {
+    container.style.cursor = "pointer";
+
+    container.addEventListener("click", () => {
+      popup({type: type, start: options[0], end: options[1], planes: planes, id_plane: idPlane, use: use});
+    });
+  }
 
   notificationContainer.style.opacity = "0";
   notificationContainer.appendChild(container);

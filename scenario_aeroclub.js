@@ -19,12 +19,19 @@ if(send != null) {
     button.addEventListener("click", (e) => {
       let data = "";
 
-      if(e.target.dataset.prestation === "simple_services") {
+      if(e.target.dataset.prestation == "simple_services") {
         let container = document.querySelector(".simple_services").parentNode;
 
         data = "&title=" + encodeURIComponent(container.querySelector("select").selectedOptions[0].textContent.toLowerCase());
         data += "&duration=" + (isNaN(parseInt(container.querySelector("input[type=\"text\"]").value)) ? 0 : container.querySelector("input[type=\"text\"]").value);
-        data += "&goodWeight=" + (container.querySelector("input[type=\"checkbox\"]").checked ? 1 : 0);
+        data += "&goodAge=" + (container.querySelector("input[type=\"checkbox\"]").checked ? 1 : 0);
+      } else if(e.target.dataset.prestation == "extra_service") {
+        let container = document.querySelector(".extra_service").parentNode;
+
+        data = "&title=" + encodeURIComponent(container.querySelector("select").selectedOptions[0].value);
+        data += "&member=" + (container.querySelector("#club").checked ? "true" : "false");
+        data += "&age=" + (container.querySelector("#age_legal").checked ? "true" : "false");
+        data += "&revue=" + (container.querySelector("#revue").checked ? "true" : "false");
       }
 
       window.location.href = e.target.dataset.href + data;
@@ -52,9 +59,22 @@ if(valid !== null) {
 
     let manager = new MomentUtils();
     let data = decodeURIComponent(window.location.search.substring(1));
-    data += "&action=" + manager.timestamp(moment(action, "DD/MM/YYYY HH:mm")._d);
+    let prestation_date = moment(action, "DD/MM/YYYY HH:mm")._d;
+    data += "&action=" + manager.timestamp(prestation_date);
 
-    if(getQueryVariable("prestation") == "simple_service") {
+    // debug
+    let now = new Date();
+
+    if(new Date(now.getFullYear(), 3, 15, 0, 0, 0) > prestation_date || new Date(now.getFullYear(), 9, 15, 15, 59) < prestation_date) {
+      if(prestation_date.getDay() != 0 && prestation_date.getDay() != 6) {
+        if(!moment(moment(prestation_date).format("DD-MM-YYYY"), "DD-MM-YYYY").isFerie()) {
+          popup.manager.open("<span style=\"color: #A61835\">Veuillez nous excuser, l'aéroclub est fermé à cette date</span>");
+          return;
+        }
+      }
+    }
+
+    if(getQueryVariable("prestation") == "simple_service" || getQueryVariable("prestation") == "extra_service") {
       sendPrestation(data, (response) => {
         response = JSON.parse(response);
 

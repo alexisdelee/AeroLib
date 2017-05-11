@@ -1,4 +1,4 @@
-<?php
+rem<?php
   require_once("../platforms/databases/PDOUtils.php");
 
   setLocale(LC_ALL, "fr_FR");

@@ -18,9 +18,9 @@
     ]
   ];
 
-  if(isset($_POST["title"], $_POST["duration"], $_POST["goodWeight"], $_POST["action"], $_POST["email"])) {
-    if(is_nan($_POST["action"]) || is_nan($_POST["duration"]) || is_nan($_POST["goodWeight"])
-      || $_POST["action"] < 0 || $_POST["duration"] < 0 || $_POST["goodWeight"] < 0) {
+  if(isset($_POST["title"], $_POST["duration"], $_POST["goodAge"], $_POST["action"], $_POST["email"])) {
+    if(is_nan($_POST["action"]) || is_nan($_POST["duration"]) || is_nan($_POST["goodAge"])
+      || $_POST["action"] < 0 || $_POST["duration"] < 0 || $_POST["goodAge"] < 0) {
       _response_code(409, "Valeurs saisies incorrectes", $res);
     }
 
@@ -36,8 +36,9 @@
     $manager = PDOUtils::getSharedInstance();
 
     $activity = $manager->getAll("
-      SELECT idActivity, cost, tva FROM `activity`
+      SELECT idActivity, cost, tva, `use` FROM `activity`
       WHERE title = ?
+        AND formation <> 1
     ", [utf8_decode($_POST["title"])]);
 
     if(empty($activity)) { // on vérifie que la prestation existe bien
@@ -46,7 +47,8 @@
     
     $planes = $manager->getAll("
       SELECT type FROM `privateplane`
-    "); // on récupère tous les avions de l'aéroclub
+      WHERE `use` = ?
+    ", [$activity[0]["use"]]); // on récupère tous les avions de l'aéroclub
 
     if(empty($planes)) {
       _response_code(404, "Aucun avion disponible à cette date", $res);
@@ -59,7 +61,6 @@
         curl_setopt($init, CURLOPT_URL, "localhost/aerodrome/services/getStatusProperties.php");
         curl_setopt($init, CURLOPT_POST, 1);
         curl_setopt($init, CURLOPT_POSTFIELDS, http_build_query(["type" => $plane["type"], "start" => $_POST["action"], "end" => ((int)$_POST["action"] + (int)$_POST["duration"] * 60)]));
-        // curl_setopt($init, CURLOPT_POSTFIELDS, http_build_query(["type" => "PIPER PA 28 180cv F-GIDI", "start" => 1493103600, "end" => 1493109000]));
         curl_setopt($init, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($init, CURLOPT_HEADER, 0);
         curl_setopt($init, CURLOPT_RETURNTRANSFER, 1);
@@ -77,8 +78,8 @@
       }
     }
 
-    if($_POST["goodWeight"] != 1) {
-      _response_code(403, "Vous n'avez pas la taille minimale requise", $res);
+    if($_POST["goodAge"] != 1) {
+      _response_code(403, "Vous n'avez pas l'age minimal requis", $res);
     }
 
     if((int)$_POST["duration"] < 15) {

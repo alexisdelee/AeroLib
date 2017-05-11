@@ -24,14 +24,43 @@
       <h2>Pressez la touche <small>[ESPACE]</small> pour être rédirigé vers les plannings<br><br>ou<br><br>réservez un rendez-vous sur le <a href="#" onclick="browser();">site officiel</a>.</h2>
     </footer>
 
+    <div id="login">
+      <form class="code_input">
+        <input type="password" class="2">
+        <input type="password" class="4">
+        <input type="password" class="8">
+        <input type="password" class="16">
+        <input type="password" class="32">
+        <input type="password" class="64">
+      </form>
+    </div>
+
+    <a id="admin" title="Connexion administrateur" href="#admin">
+      <img src="res/icon_admin.png">
+    </a>
+
+    <script type="text/javascript" src="AutotabMagic.js"></script>
     <script type="text/javascript" src="libs/velocity/velocity.min.js"></script>
+    <script type="text/javascript" src="login.js"></script>
 		<script type="text/javascript">
+      let status = true;
+
 			window.addEventListener("keydown", (e) => {
-        if(e.keyCode == 32) {
+        if(e.keyCode == 32 && status) {
         	Velocity(document.body, {opacity: "0"}, {duration: 800, progress: (els, complete) => {
         		if(complete == 1) window.location.href = "calendar.html";
         	}});
         }
+      });
+
+      document.querySelector("#admin").addEventListener("click", (e) => {
+        if(status) {
+          Velocity(document.querySelector("footer"), {top: "0px"}, {duration: 650});
+        } else {
+          Velocity(document.querySelector("footer"), {top: "387px"}, {duration: 650});
+        }
+
+        status = !status;
       });
 
       function browser() {
