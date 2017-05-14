@@ -51,9 +51,8 @@ function popup(request) {
 
   /* on récupère les informations de la notification ici */
 
-  mysql.exec("SELECT service.idService, aeroclub.idAeroclub, user.name, activity.title, service.dateStart, service.dateEnd, privateplane.idPrivatePlane FROM `receipt` "
+  mysql.exec("SELECT service.idService, aeroclub.idAeroclub, service.name, activity.title, service.dateStart, service.dateEnd, privateplane.idPrivatePlane FROM `receipt` "
            + "LEFT JOIN `service` ON receipt.idReceipt = service.idReceipt "
-           + "LEFT JOIN `user` ON receipt.idUser = user.idUser "
            + "LEFT JOIN `aeroclub` ON service.idAeroclub = aeroclub.idAeroclub "
            + "LEFT JOIN `activity` ON aeroclub.idActivity = activity.idActivity "
            + "LEFT JOIN `privateplane` ON aeroclub.idPrivatePlane = privateplane.idPrivatePlane "
@@ -122,7 +121,7 @@ function popup(request) {
             e.target.style.color = "#666B85";
           } else if(!~[48, 49, 50, 51, 52, 53, 54, 55, 56, 57, // numeric keys
                      96, 97, 98, 99, 100, 101, 102, 103, 104, 105, // numpad
-                     58, // :
+                     58, 191, // :
                      111, // divide
                      37, 38, 39, 49, // arrow
                      32, // space
@@ -172,7 +171,7 @@ function popup(request) {
 function modify(options, ids, dates, type, use) {
   request.post({
     headers: {"Content-type": "application/x-www-form-urlencoded"},
-    url: "http://localhost/aerodrome/services/getStatusProperties.php",
+    url: "http://aen.fr:8080/services/getStatusProperties.php",
     form: {"type": type, "start": dates[0], "end": dates[1]}
   }, (err, response, body) => {
     if(response.statusCode == 200) {
@@ -184,7 +183,7 @@ function modify(options, ids, dates, type, use) {
       close_popup(options);
     } else {
       alert("Plage horraire déjà occupée");
-    } 
+    }
   });
 }
 

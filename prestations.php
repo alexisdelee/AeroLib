@@ -42,9 +42,10 @@
 
     if(in_array($_POST["prestation"], ["simple_service", "extra_service"]) && isset($response["options"]["id_aeroclub"]) && $response["options"]["id_aeroclub"] != "NULL") {
       $manager->exec("
-        INSERT INTO `service`(description, subscription, inscription, dateStart, dateEnd, contributions, idReceipt, idAeroclub, costService, tvaService)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO `service`(name, description, subscription, inscription, dateStart, dateEnd, contributions, idReceipt, idAeroclub, costService, tvaService)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ", [
+        utf8_decode($_POST["name"]),
         utf8_decode($response["description"]),
         $response["subscription"],
         $response["inscription"],
@@ -59,11 +60,16 @@
 
       $_SESSION["prestation"]["cost"] = $response["options"]["cost"];
       $_SESSION["prestation"]["tva"] = $response["options"]["tva"];
+
+      if(isset($response["options"]["frais"]) && !empty($response["options"]["frais"])) {
+        $_SESSION["prestation"]["frais"] = $response["options"]["frais"];
+      }
     } else if(isset($response["options"]["id_plane"]) && $response["options"]["id_plane"] != -1) {
       $manager->exec("
-        INSERT INTO `service`(description, subscription, inscription, dateStart, dateEnd, idReceipt, idPlane, costService, tvaService)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO `service`(name, description, subscription, inscription, dateStart, dateEnd, idReceipt, idPlane, costService, tvaService)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ", [
+        "root",
         utf8_decode($response["description"]),
         $response["subscription"],
         $response["inscription"],

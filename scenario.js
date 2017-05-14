@@ -110,10 +110,10 @@ if(send != null) {
     button.addEventListener("click", (e) => {
       let data = "";
 
-      if(e.target.dataset.prestation === "reservoir") {
-        let container = document.querySelector(".reservoir").parentNode;
+      if(e.target.dataset.prestation === "avitaillement") {
+        let container = document.querySelector(".avitaillement").parentNode;
 
-        data = "&product=" + encodeURIComponent(container.querySelector("select").selectedOptions[0].innerHTML);
+        data = "&product=" + encodeURIComponent(container.querySelector("select").selectedOptions[0].value);
         data += "&quantite=" + (isNaN(parseInt(container.querySelector("input").value)) ? 0 : container.querySelector("input").value);
       } else if(e.target.dataset.prestation === "nettoyage") {
         data = "";
@@ -150,9 +150,31 @@ if(valid !== null) {
     let action = document.querySelector("#date");
     action = (action == null || action.value == "" ? "01/01/1970 01:00" : action.value);
 
+    let pattern = new RegExp("([0-9]{2}/){2}[0-9]{4} [0-9]{2}:[0-9]{2}", "g");
+    if(!pattern.test(action)) {
+      popup.manager.open("<span style=\"color: #A61835\">Veuillez rentrer une date valide</span>");
+      return;
+    }
+
     let manager = new MomentUtils();
     let data = decodeURIComponent(window.location.search.substring(1));
-    data += "&action=" + manager.timestamp(moment(action, "DD/MM/YYYY HH:mm")._d);
+    let prestation_date = moment(action, "DD/MM/YYYY HH:mm")._d;
+    data += "&action=" + manager.timestamp(prestation_date);
+
+    if(prestation_date == "Invalid Date") {
+      popup.manager.open("<span style=\"color: #A61835\">Veuillez rentrer une date valide</span>");
+      return;
+    }
+
+    let now = new Date();
+
+    if(getQueryVariable("timetable") == "Semaine") {
+      if(prestation_date.getDay() == 0 || prestation_date.getDay() == 6) {
+        data = data.replace(/(timetable=).*?(&)/, "$1" + "Week-end/JF" + "$2");
+      } else if(moment(moment(prestation_date).format("DD-MM-YYYY"), "DD-MM-YYYY").isFerie()) {
+        data = data.replace(/(timetable=).*?(&)/, "$1" + "Week-end/JF" + "$2");
+      }
+    }
 
     if(getQueryVariable("prestation") == "atterrissage") {
       if(getQueryVariable("type") != null) {

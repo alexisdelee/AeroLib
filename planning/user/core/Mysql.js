@@ -7,10 +7,10 @@ class Mysql {
 
   getSharedInstance() {
     this.connection = mysql_manager.createConnection({
-      // host: "192.168.91.141",
-      host: "localhost",
-      user: "root",
-      password: "",
+      host: "192.168.80.129",
+      // host: "localhost",
+      user: "staff",
+      password: "staff",
       database: "aerodrome"
     });
 

@@ -11,6 +11,7 @@
     "inscription" => 0,
     "options" => [
       "id_aeroclub" => "NULL",
+      "name" => null,
       "cost" => 0,
       "tva" => 0,
       "start" => 0,
@@ -18,9 +19,9 @@
     ]
   ];
 
-  if(isset($_POST["title"], $_POST["duration"], $_POST["goodAge"], $_POST["action"], $_POST["email"])) {
-    if(is_nan($_POST["action"]) || is_nan($_POST["duration"]) || is_nan($_POST["goodAge"])
-      || $_POST["action"] < 0 || $_POST["duration"] < 0 || $_POST["goodAge"] < 0) {
+  if(isset($_POST["title"], $_POST["duration"], $_POST["age"], $_POST["name"], $_POST["action"], $_POST["email"])) {
+    if(is_nan($_POST["action"]) || is_nan($_POST["duration"]) || is_nan($_POST["age"])
+      || $_POST["action"] < 0 || $_POST["duration"] < 0 || $_POST["age"] < 0) {
       _response_code(409, "Valeurs saisies incorrectes", $res);
     }
 
@@ -39,10 +40,11 @@
       SELECT idActivity, cost, tva, `use` FROM `activity`
       WHERE title = ?
         AND formation <> 1
-    ", [utf8_decode($_POST["title"])]);
+        AND age <= ?
+    ", [utf8_decode($_POST["title"]), $_POST["age"]]);
 
     if(empty($activity)) { // on vérifie que la prestation existe bien
-      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche", $res);
+      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche (piste de recherche suggérée: âge incorrect)", $res);
     }
     
     $planes = $manager->getAll("
@@ -78,10 +80,6 @@
       }
     }
 
-    if($_POST["goodAge"] != 1) {
-      _response_code(403, "Vous n'avez pas l'age minimal requis", $res);
-    }
-
     if((int)$_POST["duration"] < 15) {
       _response_code(403, "La durée minimum est de 15 minutes pour cette prestation", $res);
     } else {
@@ -99,6 +97,7 @@
     $res["description"] = $_POST["title"] . " de " . $_POST["duration"] . " minutes";
     $res["inscription"] = (int)$_POST["action"];
     $res["options"]["id_aeroclub"] = $idLastAeroclub;
+    $res["options"]["name"] = $_POST["name"];
     $res["options"]["cost"] = round((floatval($activity[0]["cost"]) * (int)$_POST["duration"]) / 60, 2);
     $res["options"]["tva"] = round((floatval($activity[0]["tva"]) * (int)$_POST["duration"]) / 60, 2);
     $res["options"]["start"] = (int)$_POST["action"];

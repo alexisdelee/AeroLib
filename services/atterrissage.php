@@ -1,4 +1,4 @@
-rem<?php
+<?php
   require_once("../platforms/databases/PDOUtils.php");
 
   setLocale(LC_ALL, "fr_FR");
@@ -36,7 +36,7 @@ rem<?php
             AND plane.matricule = ?)
       ORDER BY idService DESC
       LIMIT 1
-    ", [$res["subscription"], $_POST["action"], $_POST["email"], $_POST["matricule"]]);
+      ", [$res["subscription"], $res["subscription"], $_POST["email"], $_POST["matricule"]]);
 
     if(empty($prestation)) {
       _response_code(400, "Vous devez confirmer entre 24h et 48h avant la prestation", $res);
@@ -144,8 +144,6 @@ rem<?php
 
     $signs = $manager->getAll("
       SELECT costSigns, tvaSigns FROM `signs`
-      ORDER BY idSigns DESC
-      LIMIT 1
     ");
 
     if($signs == -1) {

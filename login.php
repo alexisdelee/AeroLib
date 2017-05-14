@@ -12,8 +12,10 @@
     } else {
       $_SESSION["error_subscribe"][] = 0;
 
+      $_SESSION["name"] = $user->getName();
       $_SESSION["accesstoken"] = $user->getAccesstoken();
       $_SESSION["statut"] = $user->getStatut();
+      $_SESSION["age"] = floor((time() - intval($user->getBirthday())) / (3600 * 24 * 365));
     }
   } else {
     echo join(":", $_SESSION["error_subscribe"]);

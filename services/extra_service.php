@@ -11,18 +11,20 @@
     "inscription" => 0,
     "options" => [
       "id_aeroclub" => "NULL",
+      "name" => null,
       "cost" => 0,
       "tva" => 0,
       "start" => 0,
       "end" => 0,
-      "contributions" => 0
+      "contributions" => 0,
+      "frais" => []
     ]
   ];
 
   $initiation = false;
 
-  if(isset($_POST["title"], $_POST["action"], $_POST["member"], $_POST["age"], $_POST["revue"], $_POST["email"])) {
-    if(is_nan($_POST["action"])
+  if(isset($_POST["title"], $_POST["action"], $_POST["member"], $_POST["age"], $_POST["name"], $_POST["revue"], $_POST["email"])) {
+    if(is_nan($_POST["action"]) || is_nan($_POST["age"])
       || $_POST["action"] < 0) {
       _response_code(409, "Valeurs saisies incorrectes", $res);
     }
@@ -42,10 +44,11 @@
       SELECT idActivity, cost, tva, `use` FROM `activity`
       WHERE title = ?
         AND formation = 1
-    ", [utf8_decode($_POST["title"])]);
+        AND age <= ?
+    ", [utf8_decode($_POST["title"]), $_POST["age"]]);
 
     if(empty($activity)) { // on vérifie que la prestation existe bien
-      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche", $res);
+      _response_code(404, "Impossible de trouver les données en rapport avec votre recherche (piste de recherche suggérée: âge incorrect)", $res);
     }
 
     if($_POST["title"] == "sans engagement") {
@@ -116,6 +119,7 @@
       $tva = 0;
     } else {
       $cost = $planes[0]["tarif_instruction"];
+      $res["options"]["frais"][] = "tarif instruction avion [" . $cost . "€]";
 
       $subscription = $manager->getAll("
         SELECT service.subscription FROM `service`
@@ -135,9 +139,11 @@
         if($_POST["member"] == "true") {
           $cost += 178;
           $res["options"]["contributions"] = 1;
-        } else if($_POST["age"] == "true") {
+          $res["options"]["frais"][] = "cotisation à l'aéroclub pour un membre d'un autre aéroclub [178€]";
+        } else if($_POST["age"] < 21) {
           $cost += 218;
           $res["options"]["contributions"] = 1;
+          $res["options"]["frais"][] = "cotisation à l'aéroclub pour les moins de 21 ans [218€]";
         }
       }
 
@@ -152,6 +158,8 @@
       if(!empty($ffa)) {
         $cost += $ffa[0]["costFFA"];
         $tva += $ffa[0]["tvaFFA"];
+
+        $res["options"]["frais"][] = "adhésion à la Fédération Française Aéronotique (FFA) [" . ($ffa[0]["costFFA"] + $ffa[0]["tvaFFA"]) . "€]";
       }
     }
 

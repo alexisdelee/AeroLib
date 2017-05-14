@@ -38,11 +38,9 @@
         <article>
           <center>
             <p>
-              <?php
-                if(!isset($_GET["type"]) || $_GET["type"] != "confirmation") {
-                  echo "A quelle date souhaitez-vous avoir accès à la prestation ? <input id=\"date\" type=\"text\" style=\"width: 150px;\" placeholder=\"10/04/2017 13:13\"><br><br>";
-                }
-              ?>
+              <?php if(!isset($_GET["type"]) || $_GET["type"] != "confirmation") { ?>
+                <span>A quelle date souhaitez-vous avoir accès à la prestation ? </span><input id="date" type="text" style="border: none; border-bottom: 2px solid #222; width: 113px;" placeholder="10/04/2017 13:13" autofocus=""><br><br>
+              <?php } ?>
 
               <button id="accept">Ajouter au panier</button>
               <button id="cancel" onclick="window.location.href = 'escale.php'">Annuler</button>
@@ -129,11 +127,11 @@
               <h2 style="margin-top: -40px;">Atterrissage</h2><br>
 
               <select class="min-select" style="margin-top: -10px;">
-                <option value="defaut">Forfait</option>
                 <?php
                   $result = $manager->getAll("
                     SELECT DISTINCT timetable
                     FROM `landing`
+                    WHERE timetable <> \"Week-end/JF\"
                   ");
 
                   foreach($result as $data) {
@@ -146,7 +144,6 @@
 
               <p>
                 <select class="min-select">
-                  <option value="defaut">Zone de stationnement</option>
                   <optgroup label="Intérieur">
                     <?php
                       $result = $manager->getAll("
@@ -164,15 +161,15 @@
                   </optgroup>
                 </select>
 
-                <input type="text" placeholder="Nombre de jours" style="width: 160px;">
+                <input type="text" placeholder="15" style="width: 34px; border: 2px solid #222; border-radius: 2px;"> jour(s)
                 <button id="confirm">Confirmer atterrissage</button>
                 <button class="send" data-prestation="atterrissage" data-href="<?php echo $router->rewriteUrl("prestation", "atterrissage"); ?>">Valider</button>
               </p>
             </div>
           </li>
           <li class="tabs">
-            <div class="prestations reservoir">
-              <a title="Avitaillement" href="#reservoir">Avitaillement</a>
+            <div class="prestations avitaillement">
+              <a title="Avitaillement" href="#avitaillement">Avitaillement</a>
             </div>
             <div class="paragraph">
               <h2 style="margin-top: 10px;">Avitaillement</h2><br>
@@ -181,17 +178,16 @@
                 <select class="min-select">
                   <?php
                     $manager = PDOUtils::getSharedInstance();
-                    $result = $manager->getAll("SELECT product FROM `reservoir`");
+                    $result = $manager->getAll("SELECT product, costReservoir, tvaReservoir FROM `reservoir`");
 
-                    echo "<option>Produits</option>";
                     foreach($result as $data) {
-                      echo "<option>" . $data["product"] . "</option>";
+                      echo "<option value=\"" . $data["product"] . "\">" . $data["product"] . " [" . ($data["costReservoir"] + $data["tvaReservoir"]) . "€/L]" . "</option>";
                     }
                   ?>
                 </select>
 
-                <input type="text" placeholder="Quantité désirée en litre" style="width: 160px;">
-                <button class="send" data-prestation="reservoir" data-href="<?php echo $router->rewriteUrl("prestation", "avitaillement"); ?>">Valider</button>
+                <input type="text" placeholder="1200" style="width: 42px; border: 2px solid #222; border-radius: 2px;"> litre(s)
+                <button class="send" data-prestation="avitaillement" data-href="<?php echo $router->rewriteUrl("prestation", "avitaillement"); ?>">Valider</button>
               </p>
             </div>
           </li>
@@ -220,6 +216,7 @@
     </div>
 
     <script type="text/javascript" src="libs/moment/moment.js"></script>
+    <script type="text/javascript" src="libs/moment/moment-ferie-fr.js"></script>
     <script type="text/javascript" src="controllers/MomentUtils.js"></script>
     <script type="text/javascript" src="controllers/oXHR.js"></script>
     <script type="text/javascript" src="controllers/Request.js"></script>

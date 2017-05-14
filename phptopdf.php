@@ -69,6 +69,12 @@
       $this->Cell(22, 6, $footer[1], 1, 0, "C", false);
       $this->Cell(22, 6, $footer[2], 1, 0, "C", false);
     }
+
+    function Footer() {
+      $this->SetY(-15);
+      $this->SetFont("Arial", "I", 8);
+      $this->Cell(0, 10, utf8_decode("En cas de retard de paiement, le total de la facture impayée le jour du mouvement est majoré de 31") . chr(128) . utf8_decode(" pour frais de recherches et de dossier."), 0, 0, "C");
+    }
   }
 
   if(isset($_GET["id"])) {
@@ -98,6 +104,12 @@
       $pdf->SetFont("Arial", "", "10");
       $pdf->Cell(180, 0, utf8_decode("École de pilotage avion / ulm - Vol decouverte et initiation"), 0, 1, "R");
 
+      $pdf->SetFont("Arial", "", "7");
+      $pdf->Cell(180, 15, utf8_decode("AEN - Route des Damville - 27220 Les Authieux - France"), 0, 1, "R");
+      $pdf->Cell(180, -10, utf8_decode("Siret : 132 654 798 00045"), 0, 1, "R");
+      $pdf->Cell(180, 15, utf8_decode("Tel : 02 32 37 52 80 - Email : aeroclub.evreux@wanadoo.fr"), 0, 1, "R");
+      $pdf->Cell(180, -10, utf8_decode("Site internet : www.aen.fr"), 0, 1, "R");
+
       $user = $manager->getAll("
         SELECT name FROM `user`
         WHERE email = ?
@@ -108,10 +120,10 @@
       }
 
       $pdf->SetFont("Arial", "B", "10");
-      $pdf->Cell(180, 30, utf8_decode("à destination de Madame/Monsieur " . utf8_encode($user[0]["name"])), 0, 1, "R");
+      $pdf->Cell(180, 60, utf8_decode("A destination de Madame/Monsieur " . utf8_encode($user[0]["name"])), 0, 1, "R");
 
       $pdf->SetFont("Arial", "B", "20");
-      $pdf->Cell(0, 70, utf8_decode("Facture n°" . $data[0]["idReceipt"] . " du " . date("d/m/Y", $data[0]["creation"]) . " à " . date("H:i:s", $data[0]["creation"])), 0, 1, "C");
+      $pdf->Cell(0, 30, utf8_decode("Facture n°" . $data[0]["idReceipt"] . " du " . date("d/m/Y", $data[0]["creation"]) . " à " . date("H:i:s", $data[0]["creation"])), 0, 1, "C");
       $pdf->SetFont("Arial", "", "10");
 
       $header = ["Ref.", "D" . chr(233) . "tails", "HT", "TVA", "TTC"];

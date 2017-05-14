@@ -161,6 +161,7 @@ input {
   font-weight: normal;
   font-style: normal;
 }
+
 [class*="genericon"] {
   display: inline-block;
   width: 16px;
@@ -292,7 +293,7 @@ input {
   background-size: 60%;
 }
 
-.reservoir a:before, .reservoir a:after {
+.avitaillement a:before, .avitaillement a:after {
   content: "";
   background: url("../res/prestations/reservoir.png") no-repeat 15px 80px;
   background-size: 50%;

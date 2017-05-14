@@ -4,9 +4,9 @@
   require_once(__DIR__ . "/../../controllers/Authentification.php");
 
   class UserDAO { // Database Access Object
-    public static $C_EMAIL = 0x01;
-    public static $C_NAME  = 0x02;
-    public static $C_AGE   = 0x04;
+    public static $C_EMAIL    = 0x01;
+    public static $C_NAME     = 0x02;
+    public static $C_BIRTHDAY = 0x04;
 
     public static function register(User $user) {
       $manager = PDOUtils::getSharedInstance();
@@ -14,11 +14,11 @@
         utf8_decode($user->getName()),
         UserDAO::passwordManager($user->getPassword()),
         utf8_decode($user->getEmail()),
-        $user->getAge(),
+        $user->getBirthday(),
         $accesstoken = UserDAO::accesstokenManager()
       ];
 
-      $manager->exec("INSERT INTO `user` (name, password, email, age, accesstoken) VALUES (?, ?, ?, ?, ?)", $params);
+      $manager->exec("INSERT INTO `user` (name, password, email, birthday, accesstoken) VALUES (?, ?, ?, ?, ?)", $params);
       return $accesstoken;
     }
 
@@ -41,11 +41,22 @@
         } else {
           return 0;
         }
-      } else if($state & self::$C_AGE) {
-        $int = intval($value);
+      } else if($state & self::$C_BIRTHDAY) {
+        $date = DateTime::createFromFormat("d/m/Y", $value);
+        $state = $date && $date->format("d/m/Y") === $value;
 
-        if($int >= 10 && $int <= 115) {
-          return 0;
+        if($state) {
+          $now = new DateTime();
+          $interval = $now->diff($date);
+
+          $days = $interval->format("%R%a");
+          $days = intval($days);
+
+          if($days > -5475) { // année de naissance inférieure à 15 ans
+            return 4;
+          } else {
+            return 0;
+          }
         } else {
           return 4;
         }
@@ -104,16 +115,16 @@
         $email
       ];
 
-      $result = $manager->getAll("SELECT password, accesstoken, statut FROM `user` WHERE email = ? AND statut <> 0", $params);
+      $result = $manager->getAll("SELECT name, password, birthday, accesstoken, statut FROM `user` WHERE email = ? AND statut <> 0", $params);
 
       if(!empty($result) && password_verify($password, $result[0]["password"])) {
         $row = $result[0];
 
         return new User(
-          null,
+          utf8_encode($row["name"]),
           $password,
           $email,
-          null,
+          $row["birthday"],
           $row["accesstoken"],
           $row["statut"]
         );

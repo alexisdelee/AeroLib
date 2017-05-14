@@ -5,7 +5,7 @@ let login = new Autotab();
 login.listen(document.querySelector("#login .code_input"), 1, (keys, els) => {
   request.post({
     headers: {"Content-type": "application/x-www-form-urlencoded"},
-    url: "http://localhost/aerodrome/login.php",
+    url: "aen.fr:8080/login.php",
     form: {"email": "root@aen.fr", "password": keys}
   }, (err, response, body) => {
     if(response.statusCode == 200) {

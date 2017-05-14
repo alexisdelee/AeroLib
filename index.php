@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="style/popup.css">
     <link rel="stylesheet" type="text/css" href="style/toggle.css">
     <link rel="stylesheet" type="text/css" href="style/home.css">
+    <link rel="stylesheet" type="text/css" href="style/component.css">
     <link rel="icon" type="image/png" href="res/logo.png">
   </head>
   <body>
@@ -29,12 +30,12 @@
       </div>
     </header>
 
-    <section>
-      <p>L'aéroclub d'Evreux est situé sur un terrain de la commune des Authieux aérodrome de Saint-André de l'Eure, code LFFD. L'entrée de l'aéroclub d'Evreux se trouve sur la commune des Authieux. Sortie n°11 de la N154 direction Saint-André.<br><br>
-      Il comprend : un parking pour voitures. un grand hangar pour le stationnement des avions du club. un "Club-House", mis à la disposition de tous les membres et qui comprend, entre autres, un secrétariat, une salle de "briefing" et une salle de réunion. L'entretien et l'amélioration de ce local sont à la charge de tous. </p>
-    </section>
-
     <?php if(!$router->state){ ?>
+      <section>
+        <p>L'aéroclub d'Evreux est situé sur un terrain de la commune des Authieux aérodrome de Saint-André de l'Eure, code LFFD. L'entrée de l'aéroclub d'Evreux se trouve sur la commune des Authieux. Sortie n°11 de la N154 direction Saint-André.<br><br>
+        Il comprend : un parking pour voitures. un grand hangar pour le stationnement des avions du club. un "Club-House", mis à la disposition de tous les membres et qui comprend, entre autres, un secrétariat, une salle de "briefing" et une salle de réunion. L'entretien et l'amélioration de ce local sont à la charge de tous. </p>
+      </section>
+
       <article>
         <div class="can-toggle demo-rebrand-1">
           <input id="d" type="checkbox">
@@ -52,8 +53,8 @@
           </div>
 
           <div class="row">
-            <input name="form" id="age" type="text" placeholder="37">
-            <label for="age">Age</label>
+            <input name="form" id="date" type="text" placeholder="01/07/1899">
+            <label for="date">Date</label>
           </div>
 
           <div class="row">
@@ -87,6 +88,49 @@
           </form>
         </div>
       </article>
+    <?php } else { ?>
+      <section style="padding: 100px 0;">
+        <div id="menu" class="nav">
+          <ul>
+            <li>
+              <a href="escale.php">
+                <span class="icon">
+                  <i aria-hidden="true" class="icon-home"></i>
+                </span>
+                <span>Escale</span>
+              </a>
+            </li>
+            <li>
+              <a href="aeroclub.php">
+                <span class="icon"> 
+                  <i aria-hidden="true" class="icon-services"></i>
+                </span>
+                <span>
+                  Aéroclub
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="account.php">
+                <span class="icon">
+                  <i aria-hidden="true" class="icon-portfolio"></i>
+                </span>
+                <span>Compte</span>
+              </a>
+            </li>
+            <li>
+              <a href="localisation.php">
+                <span class="icon">
+                  <i aria-hidden="true" class="icon-prevision"></i>
+                </span>
+                <span>Prévision</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <center style="margin-top: 160px;">Vous pouvez aussi télécharger le planning des réservations de l'aéroclub <a href="bin/aen_planning_setup.exe">ici</a> <small>(disponible uniquement au sein du complexe)</small>.</center>
+      </section>
     <?php } ?>
 
     <?php if(!$router->state){ ?>
@@ -111,7 +155,7 @@
           "<span>L'email n'est pas valide</span>",
           "<span>L'email existe déjà</span>",
           "<span>Le nom doit contenir plus de 2 caractères</span>",
-          "<span>L'âge est mal formaté</span>",
+          "<span>La date de naissance est mal formatée</span>",
           "<span>Couple email/mot de passe inconnu</span>"
         ];
 
@@ -120,9 +164,10 @@
           let request = new Request();
           request.post("subscribe.php",
             "name=" + document.querySelector("#inscription #name").value +
-            "&age=" + document.querySelector("#inscription #age").value +
+            "&date=" + document.querySelector("#inscription #date").value +
             "&email=" + document.querySelector("#inscription #email").value +
             "&password=" + keys, (response) => {
+              console.log(response);
               if(response !== "true") {
                 let errors = response.split(":");
 
