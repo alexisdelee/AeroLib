@@ -88,7 +88,7 @@ function planning(start, end) {
 
     request.post({
       headers: {"Content-type": "application/x-www-form-urlencoded"},
-      url: "http://aen.fr:8080/services/getStatusProperties.php",
+      url: "http://localhost/aerodrome/services/getStatusProperties.php",
       form: {"type": planes[plane].type, "start": start, "end": end}
     }, (err, response, body) => {
       if(response.statusCode == 406) { // on récupère uniquement les avions indisponibles

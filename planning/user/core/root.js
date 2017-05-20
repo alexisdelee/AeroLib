@@ -171,7 +171,7 @@ function popup(request) {
 function modify(options, ids, dates, type, use) {
   request.post({
     headers: {"Content-type": "application/x-www-form-urlencoded"},
-    url: "http://aen.fr:8080/services/getStatusProperties.php",
+    url: "http://localhost/aerodrome/services/getStatusProperties.php",
     form: {"type": type, "start": dates[0], "end": dates[1]}
   }, (err, response, body) => {
     if(response.statusCode == 200) {

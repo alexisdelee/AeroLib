@@ -1,0 +1,267 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+nav {
+  height: 60px;
+  background: #222222;
+  font-weight: 400;
+}
+
+.nav-services {
+  float: left;
+}
+
+.nav-service {
+  color: #61b2a7;
+  display: block;
+  line-height: 30px;
+  padding: 15px 20px 15px 40px;
+  float: left;
+  position: relative;
+  text-decoration: none;
+  width: 155px;
+  font-size: 14px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 1px rgba(34, 34, 34, 0.3);
+}
+
+.active {
+  color: #ffffff;
+  background: #4e7cad;
+  /* border-bottom: 3px solid #5480AF; */
+}
+
+.nav-pages {
+  float: right;
+  padding: 15px 0;
+}
+
+.nav-pages a {
+  color: #4e7cad;
+  display: inline-block;
+  line-height: 30px;
+  padding: 0 10px;
+  float: left;
+  text-decoration: none;
+  border-radius: 2px;
+  font-size: 14px;
+  margin: 0 2px;
+}
+
+.nav-pages a:hover {
+  background: rgba(78, 124, 173, 0.2);
+}
+
+.is-active {
+  color: #222222 !important;
+  background: #4e7cad !important;
+}
+
+header {
+  border-bottom: 1px solid rgba(34, 34, 34, 0.2);
+  box-shadow: inset 0 10px 10px #4e7cad;
+  background-color: #4e7cad;
+}
+
+.container {
+  background: url("../res/overlay.png") 0 50%;
+  padding: 30px 0;
+}
+
+.centered {
+  max-width: 940px;
+  margin: 0 auto;
+}
+
+.circle {
+  background-color: #4e7cad;
+  width: 180px;
+  height: 180px;
+  margin: 20px auto;
+  position: relative;
+  border: 8px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 8px rgba(34, 34, 34, 0.3), inset 0 1px 8px rgba(34, 34, 34, 0.3);
+}
+
+.logo {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border-radius: 50%;
+  background: url("../res/logo.png");
+  background-size: cover;
+  background-position: 25% 0;
+}
+
+.title {
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(34, 34, 34, 0.5);
+}
+
+.title h1, .title h2 {
+  font-weight: 400;
+}
+
+.title h1 {
+  font-size: 60px;
+  margin: 0;
+}
+
+.title h1 span {
+  color: #a7bed6;
+  font-size: 0.4em;
+  text-transform: uppercase;
+}
+
+.title h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+section {
+  float: left;
+  width: 100%;
+  background: #EEE;
+}
+
+section p {
+  max-width: 900px;
+  margin: 100px auto;
+  padding: 0 15px;
+  color: rgba(0, 0, 0, 0.7);
+  opacity: 0.7;
+}
+
+section a {
+  text-decoration: none;
+  color: #4e7cad;
+}
+
+article {
+  float: left;
+  width: 100%;
+}
+
+#connexion {
+  display: none;
+  height: 459.8px;
+}
+
+.bloc {
+  max-width: 700px;
+  margin: 100px auto;
+  padding: 0 15px;
+}
+
+.row {
+  position: relative;
+  margin: 0 15px 15px 75px;
+}
+
+.row input {
+  position: relative;
+  display: inline-block;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.7);
+  background: #efefef;
+  border: 0;
+  border-radius: 3px;
+  outline: 0;
+  text-indent: 75px;
+  padding: 10px 0 10px 15px;
+  transition: all .3s ease-in-out;
+}
+
+.row label {
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 75px;
+  padding: 11px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-align: left;
+  background: #4e7cad;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  transition: all .3s ease-in-out, color .3s ease-out;
+}
+
+.row input:focus {
+  text-indent: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.row input:focus + label {
+  transform: translateX(-100%);
+  background: #61b2a7;
+  color: #ffffff;
+}
+
+.bloc h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #a7bed6;
+}
+
+.code_input {
+  display: inline-block;
+  position: relative;
+  left: 50%;
+  width: 300px;
+  margin: 50px -150px 0 -150px;
+}
+
+.code_input input {
+  font-weight: 400px;
+  width: 40px;
+  height: 50px;
+  border: 2px solid #cccccc;
+  display: block;
+  float: left;
+  margin-right: 10px;
+  outline: 0;
+  font-size: 28px;
+  color: #cccccc;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.code_input input:hover {
+  color: #9b9b9b;
+}
+
+.code_input input:focus {
+  color: #4e7cad;
+  border-color: #4e7cad;
+}
+
+@media (max-width: 600px) {
+  .row input {
+    width: 100%;
+  }
+}
+
+@media (min-width: 600px) {
+  .row input {
+    width: 520px;
+  }
+}
