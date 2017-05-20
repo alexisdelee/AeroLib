@@ -19,7 +19,6 @@ chmod +x setup/boot.sh
 setup/boot.sh option
 ```
 
-Remarque :
 Option peut correspondre à :  
 
 - "global" : installation de tous les modules 
